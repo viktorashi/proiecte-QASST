@@ -1,13 +1,10 @@
-The very idea of the Google bug bounty / Vulnerability Reward program (VRP) stemmed from the   
-The Google Vulnerability Reward Program (VRP) is one of the many initiatives designed to incentivise ethical hackers to find and disclose security vulnerabilities in Google's products and services. The folks over at google established a formal set of criteria by which basement-dwellers have to abide
-
+The very idea of the Google bug bounty / Vulnerability Reward program (VRP) stemmed from the approach Donald Knuth, the creator of the typing system used by this very paper you're reading  \cite{GoogleBugHunters}  \\
+Back in the 70s he just kept on going for (perhaps) way too long perfecting his book "The art of computer programming", so he thought maybe it'd be a better idea to let the people submit erratas for money. Thus, a primitive form of "bug bounty" program was born. \\
+Maybe try to ship fast, and allow the people to review and correct your insecure code, rewarding them for it. \\
+Now, the folks over at google established a formal set of criteria by which basement-dwellers have to abide.
 \hrule
-
 \subsection{Hacker's VRP Workflow \texorpdfstring{$\mathcal{W}_{\text{Hacker}}$}{W Hacker}}
-
-
-The hacker's process is governed by strict adherence to the program's rules and focuses on responsible disclosure.
-
+The hacker's process is governed by adherence criteria to the program's rules:
 \begin{enumerate}[label=\textbf{\arabic*}., align=left, leftmargin=0pt, itemsep=5pt]
     \item \textbf{Preparation and Discovery:}
     \begin{itemize}
@@ -22,7 +19,7 @@ The hacker's process is governed by strict adherence to the program's rules and 
             \item A functional \textbf{Proof-of-Concept} (PoC) code or demonstration.
             \item Analysis of the \textbf{Security Impact} ($S$).
         \end{itemize}
-    \item \textbf{Constraint:} The report must be submitted via the designated Google Bug Hunters platform.
+      \item \textbf{Constraint:} The report must be submitted via the designated Google Bug Hunters platform. (duh)
     \end{itemize}
     \item \textbf{Coordinated Disclosure:}
     \begin{itemize}
@@ -39,9 +36,7 @@ The hacker's process is governed by strict adherence to the program's rules and 
 \hrule
 
 \subsection{Google's VRP Response (\texorpdfstring{$\mathcal{W}_{\text{Google}}$}{W Google}) }
-
 Google's process centers on rapid triage, accurate severity assessment, remediation, and reward fulfillment.
-
 \begin{enumerate}[label=\textbf{\arabic*}., align=left, leftmargin=0pt, itemsep=5pt]
     \item \textbf{Triage and Validation ($T$):}
     \begin{itemize}
@@ -69,19 +64,23 @@ Google's process centers on rapid triage, accurate severity assessment, remediat
 
 \hrule
 
-\section{The VRP Report Lifecycle}
-
+\subsection{The VRP Report Lifecycle}
 The end-to-end process is modeled as a linear progression of stages, aiming for rapid Mean Time To Remediation (MTTR).
-
 $$\mathcal{R}_{\text{Submit}} \xrightarrow{\text{Google}} T \xrightarrow{\text{Security Team}} S \xrightarrow{\text{Product Team}} P \xrightarrow{\text{VRP Panel}} M$$
 
 \vspace{5pt}
 \noindent Where:
 \begin{itemize}
     \item $\mathcal{R}_{\text{Submit}}$: Hacker submits the report.
-    \item $T$: Triage and Validation.
+    \item $T$: Triage and Validation (some call that, google magic).
     \item $S$: Severity Assessment.
     \item $P$: Patch Development and Deployment (Fix).
     \item $M$: Reward Payment.
 \end{itemize}
+
+
+\subsection{An examplee noww}
+There's an infamous hacker going around their bug bounty programs, that seems to be romanian, \cite{inspector-ambitious}, but he doesn't publish his reports, unfortunately, so I'll instead talk about \cite{NDevTK}, whose, out of all of the top spots, actually publishes their findings and replicability steps. \\
+
+This exploit has to do with the way Google's old GitHub competitor was parsing their ... blabla si de aici nu prea mai stiu sincer vad eu dupa
 
