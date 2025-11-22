@@ -13,6 +13,12 @@
 \usepackage{graphicx}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
 
 \title{\textbf{SEMINAR REPORT TITLE}\\
 Seminar Report}
@@ -24,22 +30,14 @@ Timotei Copaciu, timotei.copaciu@ubbcluj.ro
 }
 
 
+\pagestyle{fancy}
 
-\newpage
+\date{\today}
+
 
 \begin{document}
-\maketitle
 
-\textcolor{red}{\textbf{Important notes:}
-\begin{enumerate}
-    \item For a team of 4 students the seminar report should have 10+ pages, meaning min. 2.5 pages for each contributor, without counting the first page (Title \& Contents section) and the last page (References section).
-    \item Please include in the \textbf{Conclusions} section the summary of the contributions of each student.
-    \item \textit{While elaborating the seminar report} - please engage in the tasks such that the final version of the report consists of details presented in clear manner. Assuming that you were the reader of the report (1) you should be able to understand the content and (2) you should be able to apply easily (if needed).
-    \item Please provide a meaningful title for the seminar report, i.e., SEMINAR REPORT TITLE.
-    \item \textit{When turning in the report} - no slides for the presentation of the report are required. You may navigate over the file and present it. You may organize the presentation the way you want, e.g., one student presents the entire report or several team members discuss different sections of the report. The entire team must attend the seminar report presentation.
-    \item Please remove from the final version of the seminar report all instructions written in \textcolor{blue}{blue} or \textcolor{red}{red}.
-\end{enumerate}
-}
+\maketitle
 
 \tableofcontents
 
@@ -56,19 +54,15 @@ Timotei Copaciu, timotei.copaciu@ubbcluj.ro
 \label{label:RelatedConcepts}
 
 \textcolor{blue}{\textit{For the practical approach} $->$ Introduce the most important concepts related to the addressed topic. Include references where required and cite them in this way \cite{greenwade93}.\\
-\textit{For the research approach} $->$ Provide a short summary about previous research results. Use 2+ papers and cite them \cite{Vuln001}.
 }
 
 
 \section{\textit{Topic-based Sections}}
 \label{label:TopicBasedSection}
 
-\textcolor{blue}{\textit{For the practical approach} $->$ Include \textit{in extenso} details about the targeted topic. If needed, use additional sections and subsections.\\
-}
+\textcolor{blue}{\textit{For the practical approach} $->$ Include \textit{in extenso} details about the targeted topic. If needed, use additional sections and subsections. \\}
 
-\textcolor{blue}{\textit{For the research approach} $->$
-Describe the contributions, compare approaches of the papers reviewed.
-}
+\input{chapters/google-vrp}
 
 \subsection{Examples / Results}
 

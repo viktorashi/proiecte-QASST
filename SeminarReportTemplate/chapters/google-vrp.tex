@@ -1,0 +1,85 @@
+The Google Vulnerability Reward Program (VRP) is an initiative designed to incentivize ethical security researchers (hackers) to find and responsibly disclose security vulnerabilities in Google's products and services. The program establishes a formal, structured collaborative process for security improvement.
+
+\hrule
+
+\section{Hacker's VRP Workflow \texorpdfstring{$\mathcal{W}_{\text{Hacker}}$}{W Hacker}}
+
+
+The hacker's process is governed by strict adherence to the program's rules and focuses on responsible disclosure.
+
+\begin{enumerate}[label=\textbf{\arabic*}., align=left, leftmargin=0pt, itemsep=5pt]
+    \item \textbf{Preparation and Discovery:}
+    \begin{itemize}
+        \item Review the official VRP \textbf{scope} and \textbf{rules} (e.g., in-scope products, disallowed testing methods).
+        \item Actively search for a valid, security-relevant vulnerability ($V$) within an eligible Google asset ($A \in \text{Scope}$).
+    \end{itemize}
+    \item \textbf{Report Submission ($\mathcal{R}$):}
+    \begin{itemize}
+        \item Submit a detailed, high-quality report $\mathcal{R}$ containing:
+        \begin{itemize}
+            \item Clear \textbf{Steps to Reproduce} (STR).
+            \item A functional \textbf{Proof-of-Concept} (PoC) code or demonstration.
+            \item Analysis of the \textbf{Security Impact} ($S$).
+        \end{itemize}
+    \item \textbf{Constraint:} The report must be submitted via the designated Google Bug Hunters platform.
+    \end{itemize}
+    \item \textbf{Coordinated Disclosure:}
+    \begin{itemize}
+        \item Maintain \textbf{confidentiality} of $V$ until Google has deployed a patch ($P$). Pre-patch public disclosure invalidates eligibility for a reward ($E \rightarrow 0$).
+    \end{itemize}
+    \item \textbf{Reward and Recognition:}
+    \begin{itemize}
+        \item If $V$ is valid, unique, and in-scope, receive a \textbf{Monetary Reward} ($M$) based on severity $S$.
+        \item Potential for a \textbf{Bonus} ($B$) for exceptional reports (e.g., including a working fix or root cause analysis).
+        \item Public \textbf{Hall of Fame} recognition ($H$).
+    \end{itemize}
+\end{enumerate}
+
+\hrule
+
+\section{Google's VRP Response (\texorpdfstring{$\mathcal{W}_{\text{Google}}$}{W Google}) }
+
+Google's process centers on rapid triage, accurate severity assessment, remediation, and reward fulfillment.
+
+\begin{enumerate}[label=\textbf{\arabic*}., align=left, leftmargin=0pt, itemsep=5pt]
+    \item \textbf{Triage and Validation ($T$):}
+    \begin{itemize}
+        \item \textbf{Acknowledgement:} Initial confirmation of report reception.
+        \item \textbf{Reproduction and Validation:} Security engineers attempt to replicate the bug using the provided PoC.
+        \item \textbf{Criteria Check:} Determine if $V \in \text{Scope}$ and is not a duplicate ($\neg \text{Duplicate}$).
+    \end{itemize}
+    \item \textbf{Severity Assessment ($S$):}
+    \begin{itemize}
+        \item Assess the risk based on \textbf{Impact} (e.g., arbitrary code execution, sensitive data leakage) and \textbf{Exploitability} (complexity of exploitation).
+        \item Assign a severity level ($\text{Critical, High, Medium, Low}$).
+    \end{itemize}
+    \item \textbf{Remediation and Fix ($P$):}
+    \begin{itemize}
+        \item File an internal bug ticket and assign it to the relevant Product Engineering Team.
+        \item The team develops and deploys the corrective patch $P$ to mitigate $V$.
+    \end{itemize}
+    \item \textbf{Reward Determination ($M$):}
+    \begin{itemize}
+        \item An internal VRP panel reviews the validated report and assigned severity $S$.
+        \item The final reward amount $M$ is calculated: $M = \text{BaseReward}(S) + B$.
+        \item Payment is processed to the hacker.
+    \end{itemize}
+\end{enumerate}
+
+\hrule
+
+\section{The VRP Report Lifecycle}
+
+The end-to-end process is modeled as a linear progression of stages, aiming for rapid Mean Time To Remediation (MTTR).
+
+$$\mathcal{R}_{\text{Submit}} \xrightarrow{\text{Google}} T \xrightarrow{\text{Security Team}} S \xrightarrow{\text{Product Team}} P \xrightarrow{\text{VRP Panel}} M$$
+
+\vspace{5pt}
+\noindent Where:
+\begin{itemize}
+    \item $\mathcal{R}_{\text{Submit}}$: Hacker submits the report.
+    \item $T$: Triage and Validation.
+    \item $S$: Severity Assessment.
+    \item $P$: Patch Development and Deployment (Fix).
+    \item $M$: Reward Payment.
+\end{itemize}
