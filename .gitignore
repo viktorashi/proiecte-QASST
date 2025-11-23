@@ -96,6 +96,7 @@ acs-*.bib
 *.tfm
 
 #(r)(e)ledmac/(r)(e)ledpar
+.DS_Store
 *.end
 *.?end
 *.[1-9]

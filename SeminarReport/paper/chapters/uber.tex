@@ -1,0 +1,34 @@
+\subsection{Application 1: Uber Technologies Inc.}
+
+Uber’s bug bounty program is one of the most mature in the industry, operated through the HackerOne platform \cite{hackerone-uber}. It covers rider and driver applications, Uber Eats, Freight, and internal infrastructure, and follows a transparent “pay-for-impact’’ reward structure.
+
+\subsubsection{Program Overview and Statistics}
+
+Uber’s public program bases payouts primarily on impact rather than CVSS. Total rewards exceed \$4.2 million \cite{uber-update}. Typical payouts range from \$500 for low severity to \$50,000+ for critical issues.
+
+\paragraph{Key Statistics:}
+\begin{itemize}
+    \item Total Bounties Paid: \(\sim\$4.2\)M
+    \item Top Bounty Range: \$3{,}000–\$50{,}000
+    \item Reports Resolved: \(>2{,}500\)
+    \item Average Time to First Response: \(\sim 13\) hours
+    \item Signal-to-Noise Ratio: \(\sim 1:6\)
+\end{itemize}
+
+Uber provides a detailed “Treasure Map’’ highlighting high-value assets such as \texttt{vault.uber.com} and \texttt{cn.uber.com} \cite{uber-policy}. From June 2025 onward, Uber will adopt a new payout table with criticals in the \$11{,}000–\$15{,}000 range \cite{uber-update}.
+
+\subsubsection{Vulnerability Case Study: Account Takeover via API Leakage}
+
+A major account takeover (ATO) issue was discovered by Anand Prakash in 2019, involving API information leakage and Broken Object Level Authorization (BOLA) failures \cite{apisec-uber}. An invalid \texttt{addDriver} API call leaked a victim’s UUID, enabling unauthorized access to the \texttt{getConsentScreenDetails} endpoint \cite{traceable-uber}. 
+
+The endpoint returned personal details and the user’s authentication token (\texttt{X-Uber-Token}), enabling full account compromise \cite{digitfyi-uber}.
+
+\paragraph{Relevance to QASST:}
+The failure illustrates insufficient negative testing and inadequate backend error-message sanitization. Automated DAST tools would not detect UUID leakage without explicit rules. The bug bounty program acted as the final safety mechanism.
+
+\subsubsection{The 2016 Breach Controversy: Governance Lessons}
+
+In 2016, attackers obtained hardcoded AWS credentials from a private GitHub repository and stole data from 57 million users \cite{huntress-uber}. Uber paid them \$100{,}000 through its bug bounty program to conceal the breach \cite{ftc-uber}. Former CSO Joe Sullivan was later convicted of obstruction of justice for the cover-up \cite{nrf-sullivan}.
+
+\paragraph{Relevance to QASST:}
+This incident demonstrates that quality assurance requires transparency. Bug bounty programs are remediation mechanisms—not instruments for hiding breaches. Governance failures undermine systemic improvement and organizational integrity.
