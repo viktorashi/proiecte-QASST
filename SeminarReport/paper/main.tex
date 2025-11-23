@@ -8,6 +8,13 @@
 % Replace `letterpaper' with `a4paper' for UK/EU standard size
 \usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 
+
+% Define page geometry
+\geometry{
+ a4paper,
+ margin=1in,
+}
+
 % Useful packages
 \usepackage{amsmath}
 \usepackage{graphicx}
@@ -23,6 +30,21 @@
 
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
+
+
+% Define custom environments for case study payload/context
+\newenvironment{technicaldetails}{%
+  \par\vspace{1ex}\noindent\textbf{Technical Details:} \ignorespaces
+}{%
+  \par\vspace{1ex}
+}
+
+\newenvironment{exploitcontext}{%
+  \par\vspace{1ex}\noindent\textbf{Example Payload:} \texttt{\ignorespaces}
+}{%
+  \par\vspace{1ex}
+}
+
 
 \title{\textbf{SEMINAR REPORT TITLE}\\
 Seminar Report}
