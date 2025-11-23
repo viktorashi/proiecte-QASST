@@ -1,3 +1,4 @@
+\subsection{Application 3: Google}
 The very idea of the Google bug bounty / Vulnerability Reward program (VRP) stemmed from the approach Donald Knuth, the creator of the typing system used by this very paper you're reading  \cite{GoogleBugHunters}  \\
 Back in the 70s he just kept on going for (perhaps) way too long perfecting his book "The art of computer programming", so he thought maybe it'd be a better idea to let the people submit erratas for money. Thus, a primitive form of "bug bounty" program was born. \\
 Maybe try to ship fast, and allow the people to review and correct your insecure code, rewarding them for it. \\
@@ -5,7 +6,7 @@ Now, the folks over at google established a formal set of criteria by which base
 
 \hrule
 All of the following rules and regulations can be found here: \cite{google_bughunters_invalid_reports}, \cite{google_bughunters_report} , \cite{google_bughunters_rules}, and are have specific details, that differ wether you're submitting a report for an Android, Chrome, Google or some of their open source products.
-\subsection{Hacker Workflow ($\mathcal{W}_{\text{Hacker}}$)}
+\subsubsection{Hacker Workflow ($\mathcal{W}_{\text{Hacker}}$)}
 \begin{enumerate}[label=\textbf{\arabic*}., itemsep=4pt]
     \item \textbf{Prep \& Discovery:}  
     Review VRP scope/rules and look for in-scope, fixable issues.
@@ -22,7 +23,7 @@ All of the following rules and regulations can be found here: \cite{google_bughu
 
 \hrule
 
-\subsection{Google Workflow ($\mathcal{W}_{\text{Google}}$)}
+\subsubsection{Google Workflow ($\mathcal{W}_{\text{Google}}$)}
 \begin{enumerate}[label=\textbf{\arabic*}., itemsep=4pt]
     \item \textbf{Triage ($T$):}  
     Acknowledge the report, reproduce the bug, check scope and duplicates.
@@ -40,7 +41,7 @@ All of the following rules and regulations can be found here: \cite{google_bughu
 
 \hrule
 
-\subsection{VRP Lifecycle}
+\subsubsection{VRP Lifecycle}
 \[
 \mathcal{R}_{\text{Submit}}
 \rightarrow T
@@ -52,7 +53,7 @@ All of the following rules and regulations can be found here: \cite{google_bughu
 \noindent
 
 
-\subsection{An examplee noww}
+\subsubsection{An examplee noww}
 There's an infamous hacker going around their forums, that seems to be romanian: \cite{inspector-ambitious}, but he doesn't publish his reports unfortunately, so I'll instead talk about \cite{NDevTK}, who, out of all of the top spots, actually publishes their findings and replicability steps. \\
 
 This exploit, \cite{googlesource-oauthtoken-leak, oauthtoken-leak-bughunters} has to do with the way Google's old GitHub competitor was parsing their 
