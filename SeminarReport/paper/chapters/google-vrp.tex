@@ -2,28 +2,23 @@ The very idea of the Google bug bounty / Vulnerability Reward program (VRP) stem
 Back in the 70s he just kept on going for (perhaps) way too long perfecting his book "The art of computer programming", so he thought maybe it'd be a better idea to let the people submit erratas for money. Thus, a primitive form of "bug bounty" program was born. \\
 Maybe try to ship fast, and allow the people to review and correct your insecure code, rewarding them for it. \\
 Now, the folks over at google established a formal set of criteria by which basement-dwellers have to abide.
+
 \hrule
 \subsection{Hacker's VRP Workflow \texorpdfstring{$\mathcal{W}_{\text{Hacker}}$}{W Hacker}}
-The hacker's process is governed by adherence criteria to the program's rules:
+All of the following rules and regulations can be found here: \cite{google_bughunters_invalid_reports}, \cite{google_bughunters_report} , \cite{google_bughunters_rules}
 \begin{enumerate}[label=\textbf{\arabic*}., align=left, leftmargin=0pt, itemsep=5pt]
     \item \textbf{Preparation and Discovery:}
     \begin{itemize}
         \item Review the official VRP \textbf{scope} and \textbf{rules} (e.g., the sstuff i'm boutta tell you).
-        \item Actively search for a valid, security-relevant vulnerability ($V$) within an eligible Google asset, keeping in mind that they're starting to get a lot of AI slop garbage on their doorstep, so maybe something of use to them would be good.
+        \item Actively search for fixable stuff.
     \end{itemize}
     \item \textbf{Report Submission ($\mathcal{R}$):}
     \begin{itemize}
-        \item Submit a detailed, high-quality report $\mathcal{R}$ containing:
-        \begin{itemize}
-            \item Clear \textbf{Steps to Reproduce} (STR).
-            \item A functional \textbf{Proof-of-Concept} (PoC) code or demonstration.
-            \item Analysis of the \textbf{Security Impact} ($S$).
-        \end{itemize}
-      \item \textbf{Constraint:} The report must be submitted via the designated Google Bug Hunters platform. (duh)
+        \item Submit a detailed report $\mathcal{R}$ containing the steps to reproduce the vulnerability (V), some PoC, and analysis of the securty impact of your findings.
     \end{itemize}
     \item \textbf{Coordinated Disclosure:}
     \begin{itemize}
-        \item Maintain \textbf{confidentiality} of $V$ until Google has deployed a patch ($P$). Pre-patch public disclosure invalidates eligibility for a reward ($E \rightarrow 0$).
+        \item None of it can come out before Google has already patched the vulnerability.
     \end{itemize}
     \item \textbf{Reward and Recognition:}
     \begin{itemize}
