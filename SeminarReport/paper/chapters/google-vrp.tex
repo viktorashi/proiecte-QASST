@@ -4,74 +4,53 @@ Maybe try to ship fast, and allow the people to review and correct your insecure
 Now, the folks over at google established a formal set of criteria by which basement-dwellers have to abide.
 
 \hrule
-\subsection{Hacker's VRP Workflow \texorpdfstring{$\mathcal{W}_{\text{Hacker}}$}{W Hacker}}
-All of the following rules and regulations can be found here: \cite{google_bughunters_invalid_reports}, \cite{google_bughunters_report} , \cite{google_bughunters_rules}
-\begin{enumerate}[label=\textbf{\arabic*}., align=left, leftmargin=0pt, itemsep=5pt]
-    \item \textbf{Preparation and Discovery:}
-    \begin{itemize}
-        \item Review the official VRP \textbf{scope} and \textbf{rules} (e.g., the sstuff i'm boutta tell you).
-        \item Actively search for fixable stuff.
-    \end{itemize}
-    \item \textbf{Report Submission ($\mathcal{R}$):}
-    \begin{itemize}
-        \item Submit a detailed report $\mathcal{R}$ containing the steps to reproduce the vulnerability (V), some PoC, and analysis of the securty impact of your findings.
-    \end{itemize}
-    \item \textbf{Coordinated Disclosure:}
-    \begin{itemize}
-        \item None of it can come out before Google has already patched the vulnerability.
-    \end{itemize}
-    \item \textbf{Reward and Recognition:}
-    \begin{itemize}
-        \item If $V$ is valid, unique, and in-scope, receive a \textbf{Monetary Reward} ($M$) based on severity $S$.
-        \item Potential for a \textbf{Bonus} ($B$) for exceptional reports (e.g., including a working fix or root cause analysis).
-        \item Public \textbf{Hall of Fame} recognition ($H$).
-    \end{itemize}
+All of the following rules and regulations can be found here: \cite{google_bughunters_invalid_reports}, \cite{google_bughunters_report} , \cite{google_bughunters_rules}, and are have specific details, that differ wether you're submitting a report for an Android, Chrome, Google or some of their open source products.
+\subsection{Hacker Workflow ($\mathcal{W}_{\text{Hacker}}$)}
+\begin{enumerate}[label=\textbf{\arabic*}., itemsep=4pt]
+    \item \textbf{Prep \& Discovery:}  
+    Review VRP scope/rules and look for in-scope, fixable issues.
+    
+    \item \textbf{Report Submission ($\mathcal{R}$):}  
+    Send a clear report with repro steps, PoC, and impact.
+
+    \item \textbf{Coordinated Disclosure:}  
+    Keep findings private until Google patches them.
+
+    \item \textbf{Rewards:}  
+    Valid in-scope bugs earn monetary rewards ($M$), possible bonuses ($B$), and Hall of Fame credit ($H$).
 \end{enumerate}
 
 \hrule
 
-\subsection{Google's VRP Response (\texorpdfstring{$\mathcal{W}_{\text{Google}}$}{W Google}) }
-Google's process centers on rapid triage, accurate severity assessment, remediation, and reward fulfillment.
-\begin{enumerate}[label=\textbf{\arabic*}., align=left, leftmargin=0pt, itemsep=5pt]
-    \item \textbf{Triage and Validation ($T$):}
-    \begin{itemize}
-        \item \textbf{Acknowledgement:} Initial confirmation of report reception.
-        \item \textbf{Reproduction and Validation:} Security engineers attempt to replicate the bug using the provided PoC.
-        \item \textbf{Criteria Check:} Determine if $V \in \text{Scope}$ and is not a duplicate ($\neg \text{Duplicate}$).
-    \end{itemize}
-    \item \textbf{Severity Assessment ($S$):}
-    \begin{itemize}
-        \item Assess the risk based on \textbf{Impact} (e.g., arbitrary code execution, sensitive data leakage) and \textbf{Exploitability} (complexity of exploitation).
-        \item Assign a severity level ($\text{Critical, High, Medium, Low}$).
-    \end{itemize}
-    \item \textbf{Remediation and Fix ($P$):}
-    \begin{itemize}
-        \item File an internal bug ticket and assign it to the relevant Product Engineering Team.
-        \item The team develops and deploys the corrective patch $P$ to mitigate $V$.
-    \end{itemize}
-    \item \textbf{Reward Determination ($M$):}
-    \begin{itemize}
-        \item An internal VRP panel reviews the validated report and assigned severity $S$.
-        \item The final reward amount $M$ is calculated: $M = \text{BaseReward}(S) + B$.
-        \item Payment is processed to the hacker.
-    \end{itemize}
+\subsection{Google Workflow ($\mathcal{W}_{\text{Google}}$)}
+\begin{enumerate}[label=\textbf{\arabic*}., itemsep=4pt]
+    \item \textbf{Triage ($T$):}  
+    Acknowledge the report, reproduce the bug, check scope and duplicates.
+
+    \item \textbf{Severity ($S$):}  
+    Rate impact and exploitability; assign Critical/High/Med/Low.
+
+    \item \textbf{Fix ($P$):}  
+    Engineering team patches the issue and deploys the fix.
+
+    \item \textbf{Reward ($M$):}  
+    VRP panel reviews severity and issues payment:  
+    $M = \text{BaseReward}(S) + B$.
 \end{enumerate}
 
 \hrule
 
-\subsection{The VRP Report Lifecycle}
-The end-to-end process is modeled as a linear progression of stages, aiming for rapid Mean Time To Remediation (MTTR).
-$$\mathcal{R}_{\text{Submit}} \xrightarrow{\text{Google}} T \xrightarrow{\text{Security Team}} S \xrightarrow{\text{Product Team}} P \xrightarrow{\text{VRP Panel}} M$$
+\subsection{VRP Lifecycle}
+\[
+\mathcal{R}_{\text{Submit}}
+\rightarrow T
+\rightarrow S
+\rightarrow P
+\rightarrow M
+\]
 
-\vspace{5pt}
-\noindent Where:
-\begin{itemize}
-    \item $\mathcal{R}_{\text{Submit}}$: Hacker submits the report.
-    \item $T$: Triage and Validation (some call that, google magic).
-    \item $S$: Severity Assessment.
-    \item $P$: Patch Development and Deployment (Fix).
-    \item $M$: Reward Payment.
-\end{itemize}
+\noindent
+Where $\mathcal{R}$ = report, $T$ = triage, $S$ = severity, $P$ = patch, $M$ = reward.
 
 
 \subsection{An examplee noww}
