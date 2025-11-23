@@ -46,9 +46,66 @@ Timotei Copaciu, timotei.copaciu@ubbcluj.ro
 
 \newpage
 
+\section{Introduction}
+
+Software quality assurance has shifted from isolated internal testing to continuous, community-driven validation. In security, this change is embodied by Bug Bounty Programs (BBPs), which incentivize external researchers to find and report vulnerabilities \cite{wiki-bbp}. Traditional assurance tools such as SAST, DAST, and periodic penetration tests struggle with business logic flaws and contextual vulnerabilities that automated scanners cannot reliably detect \cite{bugcrowd-sdlc}. BBPs complement internal QA by introducing diverse human expertise capable of identifying race conditions, IDORs, and complex exploit chains often missed by automated tools.
+
+This report examines BBPs as a modern QA mechanism, focusing on programs run by Uber, Meta, Google, and GitLab. It evaluates their structure, Safe Harbor policies, and operational metrics such as time-to-triage, payout models, and researcher engagement. The analysis shows that BBPs have evolved from ad-hoc initiatives into essential infrastructure supporting high-reliability software delivery.
+
+\section{Relevance of Bug Bounties}
+
+\subsection{Limitations of Traditional Models}
+
+In the ISO/IEC 25010 framework, security is a core quality attribute. However, point-in-time penetration testing cannot keep pace with rapid CI/CD deployments \cite{miessler-pentest}. BBPs provide continuous, asynchronous testing in production environments, uncovering “unknown unknowns’’ that scanners routinely miss. Human researchers excel at detecting workflow abuses and logic flaws that fall outside signature-based detection \cite{securityjourney-compared}.
+
+\subsection{Economic and Strategic Efficiency}
+
+Unlike fixed-fee penetration tests, BBPs operate on a pay-for-results model: organizations pay only for valid findings \cite{deepstrike-vs}. Competitive rewards—such as Meta’s high-range payouts—encourage responsible disclosure over grey-market sales \cite{meta-bbp}. BBP data also reveals systemic weaknesses (e.g., recurring XSS or IDORs), enabling targeted developer training and architectural improvements.
+
+\subsection{Community and Gamification}
+
+Bug bounty platforms use leaderboards, bonuses, and reputation systems to sustain engagement. Programs such as Uber’s loyalty bonus system encourage deeper research rather than superficial scanning \cite{uber-welcome}. This creates an incentive structure aligned with real-world risk rather than checklist compliance.
+
+\section{Bug Bounties in QA Strategy}
+
+\subsection{Vulnerability Disclosure Programs vs. Bug Bounties}
+
+A Vulnerability Disclosure Program (VDP) provides a reporting channel without monetary rewards, while a BBP actively incentivizes discovery at scale \cite{guidewire-curious}. VDPs are the baseline; BBPs drive higher scrutiny and yield more impactful findings.
+
+\subsection{Safe Harbor}
+
+Modern BBPs include Safe Harbor clauses protecting good-faith researchers from legal risk, addressing historical concerns under laws like the CFAA. Standards from projects like Disclose.io have improved researcher safety and organizational trust \cite{cyberscoop-safeharbor}.
+
+\subsection{Quality Metrics}
+
+BBPs are evaluated using metrics distinct from traditional QA:
+\begin{itemize}
+    \item \textbf{Signal-to-Noise Ratio} — reflects the clarity of scope and researcher understanding.
+    \item \textbf{Time to Triage} and \textbf{Time to Bounty} — measure operational efficiency.
+    \item \textbf{Severity Distribution} — indicates ability to attract talent capable of finding critical bugs.
+    \item \textbf{MTTR} — ties findings back into DevOps agility \cite{gitkraken-dora}.
+\end{itemize}
+
 \input{chapters/uber.tex}
 \input{chapters/gitlab.tex}
 \input{chapters/google-vrp}
+
+\section{Bug Bounties vs. Penetration Testing}
+
+BBPs provide continuous coverage, whereas penetration tests are time- and scope-limited \cite{bugcrowd-which}. High-impact logic bugs like Uber’s ATO example could easily fall outside the narrow time window of a traditional test. BBPs are also more cost-efficient, paying only for exploitable findings with demonstrated impact, aligning well with risk-based QA.
+
+\section{Impact on DORA Metrics}
+
+Bug bounty findings influence two key DORA metrics:
+\begin{itemize}
+    \item \textbf{Change Failure Rate} — initial increases reflect newly discovered issues; long-term reductions signal systemic improvement.
+    \item \textbf{MTTR} — BBPs stress-test an organization’s ability to validate and deploy fixes quickly.
+\end{itemize}
+
+\section{Conclusion}
+
+Bug bounty programs now function as a core component of modern software assurance, offering continuous, human-driven security validation that complements automated testing and traditional penetration assessments.
+
 
 \newpage
 
