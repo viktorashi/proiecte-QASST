@@ -58,16 +58,17 @@ There's an infamous hacker going around their forums, that seems to be romanian:
 
 This exploit, \cite{googlesource-oauthtoken-leak, oauthtoken-leak-bughunters} has to do with the way Android source editor was parsing their \cite{android-source-editor} url's. So that, because the regex looked like:
 
-\verb{
+\begin{lstlisting}[language=JavaScript,breaklines=true]
 L1.GERRIT_LINK_MATCHER =
-  /(.*\/)?(.*?)\.((googlesource\.com)|(git\.corp\.google\.com))\/(.*)\/\+([a-zA-Z0-9]+)?(\/refs\/heads)?\/(.*?)[\/^](.*)/; 
+  /(.*\/)?(.*?)\.((googlesource\.com)|(git\.corp\.google\.com))\/(.*)\/\+([a-zA-Z0-9]+)?(\/refs\/heads)?\/(.*?)[\/^](.*)/;
+
 L1.GERRIT_LINK_MATCHER_FOR_CHANGE_FILE =
   /(.*\/)?(.*?)\.((googlesource\.com)|(git\.corp\.google\.com))\/?(\/c)?\/(.*)\/\+\/([0-9]+)\/([0-9]+)\/(.*)/;
+
 L1.GERRIT_LINK_MATCHER_FOR_CHANGE_FILE_IN_GITLES =
   /(.*\/)?(.*?)\.((googlesource\.com)|(git\.corp\.google\.com))\/(.*)\/\+([a-zA-Z0-9]+)?(\/refs\/changes)?\/([0-9]+)\/([0-9]+)\/([0-9]+)[\/^](.*)/;
-}
+\end{lstlisting}
 
-
-That meant ont could try to submit edits for a URL: \url{https://android.googlesource.com/aogarantiza.com:1337#.googlesource.com/platform/build/+show/refs/heads/master/Changes.md}, but it would instead redirect to `aogarantiza.com:1337`, or whichever other domain / port. That attacker would be able to sniff out the Oauth token of the user's account, and could even respond back with the proper data, from Android's git repo, and the user wouldn't know a thing.
+That meant ont could try to submit edits for a URL: \url{https://android.googlesource.com/aogarantiza.com:1337#.googlesource.com/platform/build/+show/refs/heads/master/Changes.md}, but it would instead redirect to \url{aogarantiza.com:1337}, or whichever other domain / port. That attacker would be able to sniff out the Oauth token of the user's account, and could even respond back with the proper data, from Android's git repo, and the user wouldn't know a thing.
 
 ndevtk submited the code for a whole Node web-server which is meant to run this malicious code, showcasing how they could use the Oauth token to change the user's profile description.
