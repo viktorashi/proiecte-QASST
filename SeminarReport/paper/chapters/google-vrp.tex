@@ -72,5 +72,12 @@ L1.GERRIT_LINK_MATCHER_FOR_CHANGE_FILE_IN_GITLES =
 That meant one could try to submit edits for a URL: \url{https://android.googlesource.com/aogarantiza.com:1337#.googlesource.com/platform/build/+show/refs/heads/master/Changes.md}, but it would instead redirect to \url{aogarantiza.com:1337}, or whichever other domain / port. That attacker would be able to sniff out the Oauth token of the user's account, and could even respond back with the proper data, from Android's git repo, and the user wouldn't know a thing.
 
 
-
 ndevtk submited the code for a whole Node web-server which is meant to run this malicious code, showcasing how they could use the Oauth token to change the user's profile description.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.3\textwidth]{figures/bio-before.png}
+    \includegraphics[width=0.3\textwidth]{figures/url.png}
+    \includegraphics[width=0.3\textwidth]{figures/bio-now.png}
+    \caption{Showcasing the attack}
+    \label{fig:attack-screenshots}
+\end{figure}
