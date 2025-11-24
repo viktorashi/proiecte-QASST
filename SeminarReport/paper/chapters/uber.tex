@@ -11,19 +11,42 @@ Uber’s public program bases payouts primarily on impact rather than CVSS. Tota
 \paragraph{Key Statistics:}
 \begin{itemize}
     \item Total Bounties Paid: \(\sim\$4.2\)M
-    \item Top Bounty Range: \$3{,}000–\$50{,}000
+    \item Top Bounty Range: \$3{,}000 to \$50{,}000
     \item Reports Resolved: \(>2{,}500\)
     \item Average Time to First Response: \(\sim 13\) hours
     \item Signal-to-Noise Ratio: \(\sim 1:6\)
 \end{itemize}
 
-Uber provides a detailed “Treasure Map’’ highlighting high-value assets such as \texttt{vault.uber.com} and \texttt{cn.uber.com} \cite{uber-policy}. From June 2025 onward, Uber will adopt a new payout table with criticals in the \$11{,}000–\$15{,}000 range \cite{uber-update}.
+Uber provides a detailed “Treasure Map’’ highlighting high-value assets such as \texttt{vault.uber.com} and \texttt{cn.uber.com} \cite{uber-policy}. From June 2025 onward, Uber will adopt a new payout table with criticals in the \$11{,}000 to \$15{,}000 range \cite{uber-update}.
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/uber01.png}
+    \caption{HackerOne's Uber Bug Bounty Program Page \cite{hackerone-uber}}.
+\label{fig:gitlab-example}
+\end{figure}
+
 
 \subsubsection{Vulnerability Case Study: Account Takeover via API Leakage}
 
 A major account takeover (ATO) issue was discovered by Anand Prakash in 2019, involving API information leakage and Broken Object Level Authorization (BOLA) failures \cite{apisec-uber}. An invalid \texttt{addDriver} API call leaked a victim’s UUID, enabling unauthorized access to the \texttt{getConsentScreenDetails} endpoint \cite{traceable-uber}. 
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/uber02.png}
+    \caption{getConsentScreenDetails endpoint request\cite{traceable-uber}}.
+\label{fig:gitlab-example}
+\end{figure}
+
 The endpoint returned personal details and the user’s authentication token (\texttt{X-Uber-Token}), enabling full account compromise \cite{digitfyi-uber}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/uber03.png}
+    \caption{getConsentScreenDetails endpoint response payload\cite{traceable-uber}}.
+\label{fig:gitlab-example}
+\end{figure}
 
 \paragraph{Relevance to QASST:}
 The failure illustrates insufficient negative testing and inadequate backend error-message sanitization. Automated DAST tools would not detect UUID leakage without explicit rules. The bug bounty program acted as the final safety mechanism.
