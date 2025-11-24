@@ -23,8 +23,8 @@ The sheer volume of payments reflects not just the number of vulnerabilities fou
     Total Bounties Paid & $>$\textbf{\$5.88 Million USD} & Cumulative total since program inception \\
     90-Day Payout & $\sim$\textbf{\$279,000} & Highest active spend on HackerOne \\
     Top Bounty Range & \textbf{ \$20,000 - \$35,000+} & For critical severity issues (CVSS 9.0-10.0) \\
-    Reports Resolved & $>$\textbf{1,970} & Indicates high throughput and remediation capacity \\
-    Response Efficiency & \textbf{High ($<$24h) (Industry Leading)} & Time to first response \\
+    Reports Resolved & $>$\textbf{1,970} & High efficiency and capacity \\
+    Response Efficiency & \textbf{High (\(\sim 7\)h) } & Time to first response. Industry leading \\
     Average Critical Payout & $\sim$\textbf{\$17,000} & Average award for critical vulnerabilities \\
     Average High Payout & $\sim$\textbf{\$7,850} & Average award for high severity vulnerabilities \\
     \bottomrule
@@ -32,6 +32,13 @@ The sheer volume of payments reflects not just the number of vulnerabilities fou
 \end{table}
 
 GitLab’s payout structure is designed to incentivize deep research into critical infrastructure. The program explicitly categorizes rewards based on severity, with critical issues commanding awards up to \textbf{\$35,000} \cite{GitLabHackerOnePolicy}. Furthermore, GitLab has been known to run ``90-day challenges'' focusing on specific high-risk areas, such as unauthenticated Remote Code Execution (RCE) or account takeovers without user interaction, offering bonuses that can push payouts to \textbf{\$50,000} regardless of the calculated CVSS score \cite{GitLab2023Review}. This directed approach transforms the bounty program from a passive intake mechanism into a strategic tool for hardening specific product verticals.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/gitLabRewardSummary.png}
+    \caption{Reward summary for GitLab on HakerOne \cite{GitLabHackerOnePolicy}}.
+\label{fig:gitlab-example}
+\end{figure}
 
 The program's statistics also reveal a healthy signal-to-noise ratio. With over \textbf{1,970 reports resolved}, the volume of valid submissions is substantial. However, the high average payouts suggest that GitLab is not merely paying for low-hanging fruit but is actively eliciting sophisticated, high-impact research. The ``Hackers Thanked'' metric, standing at over \textbf{720 individuals} \cite{GitLabHackerOnePolicy}, indicates a broad and diverse community of contributors, reducing the reliance on a small cadre of researchers and ensuring a continuous influx of fresh perspectives.
 
