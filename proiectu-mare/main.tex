@@ -3,6 +3,7 @@
 % Language setting
 % Replace `english' with e.g. `spanish' to change the document language
 \usepackage[english]{babel}
+\usepackage{float}
 
 % Set page size and margins
 % Replace `letterpaper' with `a4paper' for UK/EU standard size
@@ -44,13 +45,6 @@ Vuln-Bank is just one of the few ones where the issues that you can exploit.
 
 \section{Approach on Security}
 \label{label:Approach}
-
-\textcolor{blue}{Describe in 4-5 paragraphs the approach used to address security.
-Possible approaches: defensive testing, offensive testing,
-a mixed approach is accepted (defensive + offensive), application security audit, i.e., after release,
-etc.
-Include details about: the team members involved (experienced/junior testers/developers/researchers); the information objectives aimed, i.e., the goals of the investigation performed; the stakeholders of the security investigation (developer team leader, tester team leader, project manager, product owner).
-}
 
 We're tackling both defensive and offensive, Timotei will be testing the application from a defensive perspective, and Victor with Sebi will be doing it offensively.
 
@@ -112,9 +106,8 @@ Vulnerability 01. several details (what, how, ...) \textit{CWE-89: SQL Injection
 
 \section{Aimed Assets}
 \label{label:Assets}
-
 The effect these vulnerabilites have on the assets is presented below.
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Vulnerability Asset Mapping}
 \label{tab:vulnerability_assets}
@@ -132,11 +125,25 @@ The effect these vulnerabilites have on the assets is presented below.
 \label{label:SecurityAttributes}
 
 \textcolor{blue}{
-Identify the security attributes from the CIA triad (or CIAAN, CIANA) that are affected by the presence of the selected vulnerabilities, in relation to the targeted assets.\\
-Include the security attributes in a specific table or list together with the assets.\\
 Provide arguments (1-2 paragraphs) on how the security attributes may be affected by the existence of the studied vulnerabilities.}
 
+The SQL injection affects Confidentiality since everyone can just leak data; Integrity, since anyone can change it; Availability, causing DOS if the data is deleted; undermining Accountability, since any mallicious party can perform actions as if they were a legitimiate actor. \\
 
+All 1,2, and 4 affect non-repudiation since, for 1. Database records can be maipulated, for 2 and 4, a man-in-the-middle can get ahold of a user's access tokens and perform actions on their behalf.
+
+\begin{table}[h!]
+\centering
+\caption{Security Attributes Affected by Vulnerabilities}
+\label{tab:vulnerability_ciaan}
+\begin{tabular}{|l|l|p{4cm}|p{4cm}|}
+\hline
+\textbf{Vuln. number} & \textbf{Name} & \textbf{primary assets} & \textbf{Affected CIAAN attributes} \\ \hline
+1 & SQL injection & user database, \texttt{app.py} & Confidentiality, Integrity, Availability, Accountability, Non-repudiation \\ \hline
+2 & Improper Certificate Validation & Network Traffic, External Data & Confidentiality, Integrity \\ \hline
+3 & DOM-based XSS & User Browser, \texttt{forgot\_password.html} & Confidentiality, Integrity, Non-repudiation \\ \hline
+4 & Missing 'Secure' Cookie Attribute & JWT Session Token & Confidentiality, Non-repudiation \\ \hline
+\end{tabular}
+\end{table}
 
 
 \section{Tools Employed}
