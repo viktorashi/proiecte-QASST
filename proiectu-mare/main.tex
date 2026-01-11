@@ -32,14 +32,19 @@ Timotei Copaciu, timotei.copaciu@ubbcluj.ro
 
 \newpage
 
-\textcolor{red}{Please remove the text in blue/magenta from the sections.}
-
 \section{Software Tested}
 \label{label:Software_tested}
 
 \href{https://github.com/Commando-X/vuln-bank}{Vuln-Bank} \cite{ref:vulnBankRepo} is the application we're testing today. I know you might be tired of all the intentionally vulnerable apps, but it'll be very unlikely for us to stay and try to find issues in actual apps we use, because we're still learning, so what can we do \dots
 
 Vuln-Bank is just one of the few ones where the issues that you can exploit.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/vuln_dashboard.png}
+    \caption{VulnBank Application Dashboard (Authenticated User View)}
+    \label{fig:dashboard}
+\end{figure}
 
 
 
@@ -75,13 +80,14 @@ I've used the Tenable's tool: Nessus, via docker to find and exploit some of the
 
 Started a discovery Scan for the hosted version of https://vulnbank.org.\\
 
-\par For the offensive strategy, we adopted a Black-box Penetration Testing methodology. This simulates a real-world external attacker who has no prior knowledge of the system's internal architecture or source code. Our strategy was structured in three main phases:
+\par For the offensive strategy, we adopted a \textbf{Black-box Penetration Testing} methodology, aligned with the \textit{OWASP Web Security Testing Guide (WSTG)}. This approach simulates a real-world external attacker who has no prior knowledge of the system's internal architecture or source code. Unlike the defensive team which had full visibility, our goal was to identify vulnerabilities strictly through external interaction.
+
+Our strategy was structured in three main phases:
 \begin{itemize}
-    \item \textbf{Reconnaissance \& Discovery:} We started by exploring the application to map out the attack surface. This involved identifying all accessible endpoints, analyzing HTTP traffic, and looking for exposed information resources that shouldn't be public.
-    \item \textbf{Vulnerability Scanning \& Analysis:} Once the endpoints were identified (specifically the API), we analyzed the input vectors (URL parameters, headers, JSON bodies) to check for lack of sanitization.
-    \item \textbf{Exploitation:} Upon identifying potential weaknesses, we crafted specific payloads (manual exploitation) to confirm the vulnerabilities and demonstrate their impact (e.g., extracting sensitive data).
+    \item \textbf{Reconnaissance \& Discovery (Passive \& Active):} We started by exploring the application to map out the attack surface. This involved identifying all accessible endpoints, analyzing HTTP traffic using proxy tools, and looking for exposed information resources (such as API definitions) that shouldn't be public. We specifically looked for "low hanging fruit" that could facilitate further attacks.
+    \item \textbf{Vulnerability Scanning \& Analysis:} Once the endpoints were identified (specifically the REST API), we analyzed the input vectors (URL parameters, headers, JSON bodies) to check for lack of sanitization. We employed automated scanners (Nessus) to establish a baseline, followed by manual verification to rule out false positives.
+    \item \textbf{Exploitation:} Upon identifying potential weaknesses, we crafted specific payloads (manual exploitation) to confirm the vulnerabilities and demonstrate their impact. The focus was on demonstrating \textit{Proof of Concept (PoC)} for data exfiltration rather than destructive actions.
 \end{itemize}
-\par The primary tool employed for this strategy was Burp Suite, acting as a proxy to intercept, analyze, and modify HTTP requests in real-time.
 
 \subsection{Defensive approach}
 
@@ -112,15 +118,33 @@ Started a discovery Scan for the hosted version of https://vulnbank.org.\\
 \par This vulnerability was identified by Snyk with a priority score of 402. The issue is located in the \texttt{app.py}, within the \texttt{login} function. Upon successful user authentication, the application generates a JWT session token and sets it in the user's browser using \texttt{response.set\_cookie('token', token, httponly=True)}.
 \par While the developer correctly included the \texttt{httponly=True} flag to prevent client-side scripts from accessing the cookie, the \texttt{secure} flag was omitted. By default, this flag is set to \texttt{False}, meaning the sensitive session token can be transmitted over unencrypted HTTP connections. This configuration exposes the user's session to Man-in-the-Middle (MitM) attacks, where an attacker could intercept the plain-text cookie.
 
-Found by Nessus: \\
-SSL Medium Strength Cipher
-
 \par \textbf{Vulnerability 05: API Documentation Exposure (CWE-200 \cite{vule} - Severity: Medium)}
 \par This vulnerability involves the exposure of sensitive API documentation to unauthorized users. We discovered that the Swagger/OpenAPI documentation interface was publicly accessible at the \texttt{/api/docs} endpoint without any authentication. This documentation provides a complete blueprint of the backend, including hidden endpoints, required parameters, and data models. Attackers can use this information to map the application's attack surface rapidly and craft targeted attacks against specific API routes (like the transaction history endpoint) without needing to guess or brute-force URLs.
 
 \par \textbf{Vulnerability 06: SQL Injection in API Endpoints (CWE-89 \cite{vuld} - Severity: High)}
 \par We identified a critical SQL Injection vulnerability in the \texttt{/api/transactions} endpoint. The application fails to properly sanitize user input supplied in the transaction filtering parameters before using it in a database query. By injecting malicious SQL syntax (e.g., \texttt{' OR '1'='1}), an attacker can manipulate the backend query logic. This allows the attacker to bypass access controls and retrieve the complete transaction history for all users in the database, violating data confidentiality and potentially integrity.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/api_documentation_transactions.png}
+    \caption{The /transactions route that allows SQL Injections discovered using the Swagger API documentation}
+    \label{fig:sqli_proof}
+\end{figure}
+
+
+Found by Nessus (names and descriptions provided by Nexus): \\
+
+\textbf{Vulerability 07: Web Application Potentially Vulnerable to Clickjacking CVE-2025-64387.}
+
+Description\\
+The remote web server does not set an X-Frame-Options response header or a Content-Security-Policy 'frame-ancestors' response header in all content responses. This could potentially expose the site to a clickjacking or UI redress attack, in which an attacker can trick a user into clicking an area of the vulnerable page that is different than what the user perceives the page to be. This can result in a user performing fraudulent or malicious transactions.
+
+\textbf{Vulerability 08: Web Server Transmits Cleartext Credentials CWE-319}
+
+Description: \\
+The remote web server contains several HTML form fields containing an input of type 'password' which transmit their information to a remote web server in cleartext.
+
+An attacker eavesdropping the traffic between web browser and server may obtain logins and passwords of valid users.
 
 
 
@@ -138,6 +162,18 @@ The effect these vulnerabilites have on the assets is presented below.
 2 & Improper certificate validation & \textbf{file:} \texttt{app.py} \newline \textbf{function:} \texttt{upload\_profile\_picture\_url} \newline \textbf{communication:} External HTTP requests (SSL/TLS) \\ \hline
 3 & DOM-based Cross-site scripting & \textbf{file:} \texttt{templates/forgot\_password.html} \newline \textbf{component:} DOM element \texttt{'message'} \newline \textbf{data:} User browser session, frontend UI \\ \hline
 4 & Sensitive cookie without 'secure' attribute & \textbf{file:} \texttt{app.py} \newline \textbf{function:} \texttt{login} \newline \textbf{token:} JWT session token (\texttt{'token'} cookie) \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Offensive Vulnerability Asset Mapping}
+\label{tab:offensive_assets}
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Vuln. number} & \textbf{Vulnerability Name} & \textbf{Affected Assets} \\ \hline
+5 & API Documentation Exposure & \textbf{Resource:} \texttt{/api/docs}, \texttt{openapi.json} \newline \textbf{Information:} Full API structure, hidden endpoints \\ \hline
+6 & SQL Injection in API & \textbf{Endpoint:} \texttt{/api/transactions} \newline \textbf{Data:} User Transaction History (Sensitive Financial Data) \\ \hline
 \end{tabular}
 \end{table}
 
@@ -162,16 +198,66 @@ All 1,2, and 4 affect non-repudiation since, for 1. Database records can be maip
 \end{tabular}
 \end{table}
 
+\par \textbf{Vulnerability 5 (API Exposure)} affects \textbf{Confidentiality} because it reveals the internal logic and available methods of the application to unauthenticated actors, information that should be restricted to developers.
+\par \textbf{Vulnerability 6 (SQL Injection)} severely impacts \textbf{Confidentiality} as it allows dumping the entire transaction table. It also threatens \textbf{Integrity} because, depending on database permissions, an attacker might escalate the injection to modify or delete transaction records.
+
+\begin{table}[h!]
+\centering
+\caption{Security Attributes Affected by Offensive Vulnerabilities}
+\label{tab:offensive_ciaan}
+\begin{tabular}{|l|l|p{4cm}|p{4cm}|}
+\hline
+\textbf{No.} & \textbf{Name} & \textbf{Primary Assets} & \textbf{Affected CIAAN} \\ \hline
+5 & API Documentation Exposure & API Blueprint / System Metadata & Confidentiality, Availability \\ \hline
+6 & SQL Injection in API & Transaction Database & Confidentiality, Integrity, Accountability \\ \hline
+\end{tabular}
+\end{table}
 
 \section{Tools Employed}
 \label{label:Tools}
 
-\par Snyk Code was employed as the primary Static Application Security Testing (SAST) tool to implement the defensive security strategy. This tool integrates directly into the development workflow to analyze the source code for security vulnerabilities without requiring code execution. For this investigation, we utilized Snyk's capability to parse the application's dependency tree and source files to identify known vulnerabilities (CVEs) and code quality issues, such as SQL injection risks and improper certificate validation. One significant benefit of using Snyk is its real-time scanning capability, which provided immediate feedback on security flaws as the code was being reviewed. A second key benefit is its actionable remediation advice, which not only identifies the line of code causing the issue but often provides context-aware fix suggestions, significantly reducing the time required for the remediation phase
-
-\par \textcolor{blue}{
-A new paragraph for tools used in offensive approach will go here}
+\par \textbf{Snyk Code} was employed as the primary Static Application Security Testing (SAST) tool to implement the defensive security strategy. This tool integrates directly into the development workflow to analyze the source code for security vulnerabilities without requiring code execution. For this investigation, we utilized Snyk's capability to parse the application's dependency tree and source files to identify known vulnerabilities (CVEs) and code quality issues, such as SQL injection risks and improper certificate validation. One significant benefit of using Snyk is its real-time scanning capability, which provided immediate feedback on security flaws as the code was being reviewed. A second key benefit is its actionable remediation advice, which not only identifies the line of code causing the issue but often provides context-aware fix suggestions, significantly reducing the time required for the remediation phase
 
 Nessus, from Tenable was used to scan the hosted version of that website.
+
+\par \textbf{Burp Suite Community Edition} was the core tool for the offensive approach. It is a comprehensive platform for web application security testing.
+\begin{itemize}
+    \item \textbf{Proxy Interceptor:} This allowed us to capture requests generated by the browser (or the API docs interface) and inspect the exact headers and JSON payloads being sent to the server.
+    \item \textbf{Repeater:} This was crucial for the SQL Injection testing. It allowed us to resend the same request multiple times with slightly modified payloads (fuzzing) to observe how the server responds to SQL syntax errors vs. valid injections, without needing to use the browser UI.
+\end{itemize}
+\par \textbf{Benefit:} It provides granular control over the HTTP traffic, enabling the identification of vulnerabilities that are invisible in a standard browser view.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/api_burpsuite_http_history.png}
+    \caption{Burp Suite HTTP History showing intercepted API traffic}
+    \label{fig:burp_history}
+\end{figure}
+
+\subsubsection{Nessus}
+This is what host discovery looks like in this tool.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/nessus/host-discovery-for-vulnbank.png}
+    \caption{Nessus overview of vulnerabilities from dashboard.}
+\end{figure}
+
+And these are all the possible scan types.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/nessus/scan-types.png}
+    \caption{All nessus scan types}
+\end{figure}
+
+I've performed 2 types of scans on the platform, a Basic Network Scan, and a Web Application Tests scan. The former found Chiphertext SWEET32 collision severe attacks, but my laptop can't handle all that data aquisition and requests, so I'm instead focusing on the ones found by the latter scan.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/nessus/scans-ive-made.png}
+    \caption{Dashboard of scans}
+\end{figure}
 
 \section{Test Design. Test Execution. Test Report}
 \label{label:Tests}
@@ -238,48 +324,97 @@ F002  &TC03 & 111 & 90 & -74
 
 Table \ref{tab:TCs1} shows the TCs designed to evaluate the vulnerability AAA over F001 and F002.
 
+\subsection{Offensive Approach Test Design}
+\par We utilized Equivalence Partitioning and Boundary Value Analysis to design our test cases, focusing on identifying valid vs. invalid inputs that could trigger unexpected server behavior.
+
+\begin{table}[H]
+\centering
+\caption{Offensive Approach Test Cases}
+\label{tab:offensive_tcs}
+\begin{tabular}{|l|l|l|l|p{3cm}|}
+\hline
+\textbf{Feature} & \textbf{TC ID} & \textbf{Input} & \textbf{Expected Output} & \textbf{Actual Result} \\ \hline
+API Docs & TC\_OFF\_01 & URL: \texttt{/api/docs} (No Auth) & 403 Forbidden / Login & 200 OK (Swagger UI) \\ \hline
+API Docs & TC\_OFF\_02 & URL: \texttt{/api/v1/unknown} & 404 Not Found & 404 Not Found \\ \hline
+Transact. API & TC\_OFF\_03 & Param: \texttt{id=1} (Valid) & JSON for User 1 & JSON for User 1 \\ \hline
+Transact. API & TC\_OFF\_04 & Param: \texttt{id=1'} (Syntax) & 500 Server Error & 500 Server Error \\ \hline
+Transact. API & TC\_OFF\_05 & Param: \texttt{id=1' OR '1'='1} & 403 Forbidden & 200 OK + All Data \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/api_documentation.png}
+    \caption{Exposed Swagger UI API Documentation at /api/docs}
+    \label{fig:api_docs}
+\end{figure}
 
 
- \textcolor{blue}{\textit{For the offensive approach} $->$\\
-(1) For each vulnerability, \\
--- indicate/identify at least one test design technique employed to design test cases.\\
--- fill in a table with at least 3 test cases (TCs) that may expose that vulnerability. Include in the table the name or id of the application feature affected by the vulnerability. \\
-(2) For each TC indicate the input, expected output, and the actual result.\\
-(3) Manual testing or tool-based testing can be used (e.g., fuzzing).\\
-(4) Include screenshots or tool-generated reports for the performed scan/testing.}
+\subsubsection{Identified by Nessus}
+Nessus found: Web Server Transmits Cleartext Credentials.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/nessus/nessus-cleartext-creds.png}
+    \caption{Nessus-found cleartext creds vuln.}
+\end{figure}
+
+As well as: Web Application Potentially Vulnerable to Clickjacking.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/nessus/clickjacking-nessus.png}
+    \caption{Clickjacking vulnerability.}
+\end{figure}
+
 
 
 \section{Vulnerability Exploit}
 \label{label:Exploit}
 
-\textcolor{blue}{\textit{For the defensive approach} $->$\\
--- Imagine an attack scenario and an attempt to exploit the vulnerability.\\
--- For successful attempts provide proof of the compromised assets, e.g., screenshot, data extracted, etc.} \\
-
-
-
-
-\textcolor{blue}{\textit{For the offensive approach} $->$\\
--- Provide steps executed manually or a script that allows to exploit of the vulnerability and compromise of the asset(s).\\
--- Include proof of the asset compromised, i.e., screenshot, data exposed/received, etc.}
-
-
 \subsection{Manual Exploit}
 \label{label:ManualExploit}
 
-\textcolor{blue}{
-Seems like more for offensive \dots \\
--- commands provided to extract data\\
--- screenshots
-}
+\par For Vulnerability 06, we manually exploited the endpoint using Burp Suite Repeater:
+\begin{enumerate}
+    \item Intercepted a legitimate request to \texttt{/api/transactions}.
+    \item Modified the parameter to inject the payload: \texttt{' OR '1'='1}.
+    \item Sent the request and observed that the response contained transaction data for users other than the authenticated one (e.g., admin).
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/api_burpsuite_repeater.png}
+    \caption{Manual Exploitation of SQL Injection using Burp Suite Repeater. The response reveals transaction history for all users.}
+    \label{fig:sqli_proof}
+\end{figure}
 
 \subsection{Automated Exploit (POC)}
 \label{label:AutomatedExploit}
 
-\textcolor{blue}{
-Offensive:\\
-- a piece of code (Python, Java, etc.) that automates how the vulnerability is exploited, such that data is extracted/changed/updated/compromised.
-}
+\par The following Python script automates the exploitation of the SQL Injection to dump transaction data:
+
+\par To demonstrate the severity and reproducibility of the SQL Injection vulnerability, we developed a Python script. This script bypasses the browser interface and interacts directly with the vulnerable API endpoint. It sends a crafted GET request containing the SQL payload \texttt{' OR '1'='1} injected into the \texttt{user\_id} parameter. If the server is vulnerable, it returns a JSON response containing the transaction history of all users, which the script then parses and displays. This proves that an automated tool could easily scrape the entire database.
+
+\begin{verbatim}
+import requests
+
+# Target Configuration
+TARGET_URL = "http://vulnbank.org/api/transactions"
+PAYLOAD = "' OR '1'='1"
+
+def exploit_sqli():
+    print(f"[*] Attempting SQL Injection on {TARGET_URL}...")
+    params = {'user_id': PAYLOAD} 
+    try:
+        response = requests.get(TARGET_URL, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            print(f"[+] Exploit Successful! Retrieved {len(data)} items.")
+    except Exception as e:
+        print(f"[!] Error: {e}")
+\end{verbatim}
 
 
 \section{Remediation Steps}
@@ -363,6 +498,7 @@ Offensive:\\
 \subsection{Verification (Re-Scan)}
 \par After applying the remediation steps detailed above, we performed a secondary scan using Snyk to verify the removal of the vulnerabilities. The screenshots below illustrates the initial and updated report summary, confirming that the some issues have been resolved.
 
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.25\linewidth]{Figures/snyk-report-before-fix.png}
@@ -376,8 +512,24 @@ Offensive:\\
 \end{figure}
 
 
-\textcolor{blue}{\textit{For the offensive approach} $->$\\
-(1) Indicate steps to provide vulnerability remediation. E.g., piece of code, particular recommendations, etc.}
+\subsection{Offensive Approach Remediation}
+
+\subsubsection{Remediation of Vulnerability 05: API Documentation}
+\par Access to API documentation should be restricted in production.
+\par \textbf{Code Change (Python/Flask Example):}
+\begin{verbatim}
+if os.getenv('FLASK_ENV') == 'production':
+    # Disable Swagger UI
+    app.config['SWAGGER_UI_DOC_EXPANSION'] = 'none'
+\end{verbatim}
+
+\subsubsection{Remediation of Vulnerability 06: SQL Injection}
+\par The root cause is the concatenation of user input. We must use Parameterized Queries.
+\par \textbf{Code Change:}
+\begin{itemize}
+    \item \textbf{Before:} \texttt{cursor.execute(f"SELECT * FROM txns WHERE id = '{uid}'")}
+    \item \textbf{After:} \texttt{cursor.execute("SELECT * FROM txns WHERE id = ?", (uid,))}
+\end{itemize}
 
 
 
@@ -385,22 +537,25 @@ Offensive:\\
 \section{Vulnerability Reporting}
 \label{label:Reporting}
 
-\textcolor{blue}{\textbf{Each team member} should select a vulnerability from the detected ones and provide a short issue report that may refer to previous sections. Choose one of the vulnerability reporting strategies discussed during \textbf{Lecture 10} (\textit{week 11}), i.e., RIMSEC, CIA-TAR, STRIDE-R,  and describe the selected security issue. For each component of the acronym, include at least one sentence/idea referring to that aspect, e.g., for RIMSEC, the Reproducibility aspect is included in section xx, where…\\
-In case no vulnerability was identified after the performed investigation, provide 2-3 paragraphs with reasoning on the best reporting strategy to be applied (from the 3 mentioned above or others), considering the security approach and strategy employed during the investigation.}
+\subsection{Vulnerability Reporting (RIMSEC Strategy)}
+\par We selected the RIMSEC strategy to report the SQL Injection vulnerability:
+\begin{itemize}
+    \item \textbf{Reproducibility:} The issue is 100\% reproducible using the payload \texttt{' OR '1'='1}.
+    \item \textbf{Integrity:} The integrity is compromised as the injection could potentially be escalated to modify data.
+    \item \textbf{Mitigation:} Requires replacing dynamic SQL with parameterized queries.
+    \item \textbf{Severity:} \textbf{High}. It exposes sensitive financial data of all users.
+    \item \textbf{Exploitability:} \textbf{Easy}. Requires only a browser or proxy, no authentication bypass tools needed.
+    \item \textbf{Confidentiality:} Breached. Financial transaction logs are exposed.
+\end{itemize}
 
 \section{Conclusions}
 \label{label:Conclusions}
 
-\textcolor{blue}{Include final conclusions, lessons learned and personal considerations while working on QASSTP (3-4 paragraphs).\\
-You can focus on the following aspects: type of application to be tested, amount of knowledge to use (related or not to testing), tools required to apply, team collaboration, amount of time needed to fulfill the tasks, etc.}
+\par Working on the QASST Project using the VulnBank application provided our team with valuable hands-on experience in bridging the gap between defensive and offensive security mindsets. One of the key lessons learned was the distinct difference in perspective: while the defensive approach (SAST with Snyk) provided rapid identification of bad coding patterns (like missing SSL verification), the offensive approach (DAST with Burp Suite) was crucial in validating which of those theoretical vulnerabilities were actually exploitable in a runtime environment.
 
-\section{Other sections...}
-\label{label:Other}
+\par The collaboration within the team was effective, allowing us to correlate findings. For instance, the "Missing Secure Cookie Attribute" found via static analysis was confirmed by the offensive team's ability to intercept traffic using Burp Suite. This reinforced the idea that security must be layered; relying solely on code review or solely on penetration testing is insufficient for a critical application like a banking system.
 
-\textcolor{blue}{Please remove this section and all subsections.}
-\subsection{How to include Figures}
-
-First you have to upload the image file from your computer using the upload link in the file-tree menu. Then use the includegraphics command to include it in your document. Use the figure environment and the caption command to add a number and a caption to your figure. See the code for Figure \ref{fig:frog} in this section for an example.
+\par Regarding the tools, we found that while automated scanners like Nessus and Snyk are excellent for covering a wide breadth of issues quickly, they often lack the context that manual testing provides. The SQL Injection in the API, for example, required manual logic manipulation in Burp Suite to fully understand the data structure and impact, something a generic scanner might miss or misclassify. In conclusion, this project highlighted that securing a modern web application requires a continuous integration of both automated security gates and manual penetration testing.
 
 
 \bibliographystyle{alpha}
