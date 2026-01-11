@@ -69,7 +69,14 @@ The tools we've used were:
 \label{label:Strategy}
 
 \subsection{Offensive approach}
-to be investigated
+\textcolor{blue}{
+\textit{Using the offensive approach:}\\
+(1) Each student who addresses the offensive approach should describe shortly 2 vulnerabilities that will be investigated and remediated later.\\
+(2) Include a table with the features and the corresponding investigated vulnerabilities.}
+
+Vulnerability 01. several details (what, how, ...) \textit{CWE-89: SQL Injection} or category \textit{A03:2021-Injection}  \cite{Vuln001} is investigated as data... [reasoning about choosing to investigate the particular vulnerability.]
+
+
 \subsection{Defensive approach}
 
 \par The defensive strategy adopted for this project focuses on Static Application Security Testing (SAST) to identify vulnerabilities early in the development lifecycle. Our primary objective was to assess the code quality and conformance to security specifications without executing the application. To achieve this, we employed Snyk, a specialized SAST tool, to perform a comprehensive scan of the source code. This approach allows us to detect "code smells" and insecure coding patterns that might otherwise be missed during manual reviews.
@@ -102,20 +109,24 @@ to be investigated
 
 
 
-\textcolor{blue}{
-\textit{Using the offensive approach:}\\
-(1) Each student who addresses the offensive approach should describe shortly 2 vulnerabilities that will be investigated and remediated later.\\
-(2) Include a table with the features and the corresponding investigated vulnerabilities.}
-
-Vulnerability 01. several details (what, how, ...) \textit{CWE-89: SQL Injection} or category \textit{A03:2021-Injection}  \cite{Vuln001} is investigated as data... [reasoning about choosing to investigate the particular vulnerability.]
-
-
 
 \section{Aimed Assets}
 \label{label:Assets}
 
-\textcolor{blue}{Describe in 2-3 paragraphs the assets that may be affected by the presence of the selected vulnerabilities.\\
-Provide a table that includes the assets, along with the investigated features and vulnerabilities related to the previously mentioned assets.}
+The effect these vulnerabilites have on the assets is presented below.
+\begin{table}[h!]
+\centering
+\caption{Vulnerability Asset Mapping}
+\label{tab:vulnerability_assets}
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Vuln. number} & \textbf{vulnerability name} & \textbf{affected assets} \\ \hline
+1 & SQL injection & \textbf{file:} \texttt{app.py} \newline \textbf{function:} \texttt{api\_v1\_forgot\_password} \newline \textbf{data:} User database (IDs, credentials) \\ \hline
+2 & Improper certificate validation & \textbf{file:} \texttt{app.py} \newline \textbf{function:} \texttt{upload\_profile\_picture\_url} \newline \textbf{communication:} External HTTP requests (SSL/TLS) \\ \hline
+3 & DOM-based Cross-site scripting & \textbf{file:} \texttt{templates/forgot\_password.html} \newline \textbf{component:} DOM element \texttt{'message'} \newline \textbf{data:} User browser session, frontend UI \\ \hline
+4 & Sensitive cookie without 'secure' attribute & \textbf{file:} \texttt{app.py} \newline \textbf{function:} \texttt{login} \newline \textbf{token:} JWT session token (\texttt{'token'} cookie) \\ \hline
+\end{tabular}
+\end{table}
 
 \section{Affected Security Attributes}
 \label{label:SecurityAttributes}
