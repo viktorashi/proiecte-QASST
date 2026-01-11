@@ -54,8 +54,9 @@ The main objective of this bug-hunt was so that we can learn more about triaging
 
 The tools we've used were: 
 \begin{itemize}
-    \item Snyk.
-    etc.etc.
+    \item Snyk (Defensave),
+    \item Tenable's Nessus(Offensive),
+    \item Burp Suite (Offensive)
 \end{itemize}
 
 
@@ -63,13 +64,24 @@ The tools we've used were:
 \label{label:Strategy}
 
 \subsection{Offensive approach}
+
 \textcolor{blue}{
 \textit{Using the offensive approach:}\\
-(1) Each student who addresses the offensive approach should describe shortly 2 vulnerabilities that will be investigated and remediated later.\\
-(2) Include a table with the features and the corresponding investigated vulnerabilities.}
 
-Vulnerability 01. several details (what, how, ...) \textit{CWE-89: SQL Injection} or category \textit{A03:2021-Injection}  \cite{Vuln001} is investigated as data... [reasoning about choosing to investigate the particular vulnerability.]
+Victor:\\
 
+I've used the Tenable's tool: Nessus, via docker to find and exploit some of the vulerabilities, and got free access to Nessus Essentials Plus licence for students.
+
+
+Started a discovery Scan for the hosted version of https://vulnbank.org.\\
+
+\par For the offensive strategy, we adopted a Black-box Penetration Testing methodology. This simulates a real-world external attacker who has no prior knowledge of the system's internal architecture or source code. Our strategy was structured in three main phases:
+\begin{itemize}
+    \item \textbf{Reconnaissance \& Discovery:} We started by exploring the application to map out the attack surface. This involved identifying all accessible endpoints, analyzing HTTP traffic, and looking for exposed information resources that shouldn't be public.
+    \item \textbf{Vulnerability Scanning \& Analysis:} Once the endpoints were identified (specifically the API), we analyzed the input vectors (URL parameters, headers, JSON bodies) to check for lack of sanitization.
+    \item \textbf{Exploitation:} Upon identifying potential weaknesses, we crafted specific payloads (manual exploitation) to confirm the vulnerabilities and demonstrate their impact (e.g., extracting sensitive data).
+\end{itemize}
+\par The primary tool employed for this strategy was Burp Suite, acting as a proxy to intercept, analyze, and modify HTTP requests in real-time.
 
 \subsection{Defensive approach}
 
@@ -100,6 +112,14 @@ Vulnerability 01. several details (what, how, ...) \textit{CWE-89: SQL Injection
 \par This vulnerability was identified by Snyk with a priority score of 402. The issue is located in the \texttt{app.py}, within the \texttt{login} function. Upon successful user authentication, the application generates a JWT session token and sets it in the user's browser using \texttt{response.set\_cookie('token', token, httponly=True)}.
 \par While the developer correctly included the \texttt{httponly=True} flag to prevent client-side scripts from accessing the cookie, the \texttt{secure} flag was omitted. By default, this flag is set to \texttt{False}, meaning the sensitive session token can be transmitted over unencrypted HTTP connections. This configuration exposes the user's session to Man-in-the-Middle (MitM) attacks, where an attacker could intercept the plain-text cookie.
 
+Found by Nessus: \\
+SSL Medium Strength Cipher
+
+\par \textbf{Vulnerability 05: API Documentation Exposure (CWE-200 \cite{vule} - Severity: Medium)}
+\par This vulnerability involves the exposure of sensitive API documentation to unauthorized users. We discovered that the Swagger/OpenAPI documentation interface was publicly accessible at the \texttt{/api/docs} endpoint without any authentication. This documentation provides a complete blueprint of the backend, including hidden endpoints, required parameters, and data models. Attackers can use this information to map the application's attack surface rapidly and craft targeted attacks against specific API routes (like the transaction history endpoint) without needing to guess or brute-force URLs.
+
+\par \textbf{Vulnerability 06: SQL Injection in API Endpoints (CWE-89 \cite{vuld} - Severity: High)}
+\par We identified a critical SQL Injection vulnerability in the \texttt{/api/transactions} endpoint. The application fails to properly sanitize user input supplied in the transaction filtering parameters before using it in a database query. By injecting malicious SQL syntax (e.g., \texttt{' OR '1'='1}), an attacker can manipulate the backend query logic. This allows the attacker to bypass access controls and retrieve the complete transaction history for all users in the database, violating data confidentiality and potentially integrity.
 
 
 
@@ -123,9 +143,6 @@ The effect these vulnerabilites have on the assets is presented below.
 
 \section{Affected Security Attributes}
 \label{label:SecurityAttributes}
-
-\textcolor{blue}{
-Provide arguments (1-2 paragraphs) on how the security attributes may be affected by the existence of the studied vulnerabilities.}
 
 The SQL injection affects Confidentiality since everyone can just leak data; Integrity, since anyone can change it; Availability, causing DOS if the data is deleted; undermining Accountability, since any mallicious party can perform actions as if they were a legitimiate actor. \\
 
@@ -154,6 +171,7 @@ All 1,2, and 4 affect non-repudiation since, for 1. Database records can be maip
 \par \textcolor{blue}{
 A new paragraph for tools used in offensive approach will go here}
 
+Nessus, from Tenable was used to scan the hosted version of that website.
 
 \section{Test Design. Test Execution. Test Report}
 \label{label:Tests}
