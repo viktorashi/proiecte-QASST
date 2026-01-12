@@ -603,6 +603,23 @@ Running it:
     The site is likely vulnerable to UI Redress Attacks.
 \end{lstlisting}
 
+Now actually exploiting it:\\
+I've created a page which loads a transparent Iframe on top of a button meant to illicit the user into spamming it.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.45\textheight,keepaspectratio]{Figures/nessus/theghostly-figure.png}
+    \caption{Opacity set to 0.5, for development purposes}
+\end{figure}
+
+Now this would work if the credentials were already preffilled inside the form, perhaps from a query of the type \verb|.../?user=<username>&pass=<password>| or something.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.45\textheight,keepaspectratio]{Figures/nessus/reaping-bepefits.png}
+    \caption{Opacity set to zero, clicking the restore session actually sends the form.}
+\end{figure}
+
 \section{Remediation Steps}
 \label{sec:Remediation}
 
