@@ -93,7 +93,8 @@ The tools we've used were:
 \subsection{Offensive approach}
 
 \textcolor{blue}{
-\textit{Using the offensive approach:}\\
+\textit{Using the offensive approach:}
+}
 
 Victor:\\
 
@@ -124,7 +125,10 @@ Our strategy was structured in three main phases:
 \section{Vulnerabilities}
 \label{label:Vulnerabilities}
 
-\par \textbf{Vulnerability 01: SQL Injection (CWE-89 \cite{vul01:sqlInjection} - Severity: High.}
+\subsection{Timotei Copaciu's}
+
+\par \textbf{Vulnerability 01: SQL Injection (CWE-89 \cite{vul01:sqlInjection}) - Severity: High.}
+
 \par This vulnerability was identified by the Snyk SAST tool with a high priority score of 839. The issue resides in the \texttt{app.py} file, within the \texttt{api\_v1\_forgot\_password} function. The scanner detected that the application processes the \texttt{/api/v1/forgot-password} POST request by taking the \texttt{username} input directly from the JSON body and embedding it into a database query.
 \par The specific code flaw is the use of a Python f-string to construct the SQL command: \texttt{f"SELECT id FROM users WHERE username='\{username\}'"}. Because the input is not sanitized or parameterized before being passed to \texttt{execute\_query}, an attacker can inject malicious SQL syntax to manipulate the query logic. 
 
@@ -139,6 +143,9 @@ Our strategy was structured in three main phases:
 \par \textbf{Vulnerability 04: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute (CWE-614 \cite{vul04:sensCookie}) - Severity: Low.}
 \par This vulnerability was identified by Snyk with a priority score of 402. The issue is located in the \texttt{app.py}, within the \texttt{login} function. Upon successful user authentication, the application generates a JWT session token and sets it in the user's browser using \texttt{response.set\_cookie('token', token, httponly=True)}.
 \par While the developer correctly included the \texttt{httponly=True} flag to prevent client-side scripts from accessing the cookie, the \texttt{secure} flag was omitted. By default, this flag is set to \texttt{False}, meaning the sensitive session token can be transmitted over unencrypted HTTP connections. This configuration exposes the user's session to Man-in-the-Middle (MitM) attacks, where an attacker could intercept the plain-text cookie.
+
+
+\subsection{Sebastian Hojda's}
 
 \par \textbf{Vulnerability 05: API Documentation Exposure (CWE-200 \cite{vule} - Severity: Medium)}
 \par This vulnerability involves the exposure of sensitive API documentation to unauthorized users. We discovered that the Swagger/OpenAPI documentation interface was publicly accessible at the \texttt{/api/docs} endpoint without any authentication. This documentation provides a complete blueprint of the backend, including hidden endpoints, required parameters, and data models. Attackers can use this information to map the application's attack surface rapidly and craft targeted attacks against specific API routes (like the transaction history endpoint) without needing to guess or brute-force URLs.
@@ -155,6 +162,8 @@ Our strategy was structured in three main phases:
 
 
 Found by Nessus (names and descriptions provided by Nexus): \\
+
+\subsection{Stan Victor's}
 
 \textbf{Vulerability 07: Web Server Transmits Cleartext Credentials CWE-319}
 
@@ -239,9 +248,11 @@ All 1,2, and 4 affect non-repudiation since, for 1. Database records can be maip
 \section{Tools Employed}
 \label{label:Tools}
 
-\par \textbf{Snyk Code} was employed as the primary Static Application Security Testing (SAST) tool to implement the defensive security strategy. This tool integrates directly into the development workflow to analyze the source code for security vulnerabilities without requiring code execution. For this investigation, we utilized Snyk's capability to parse the application's dependency tree and source files to identify known vulnerabilities (CVEs) and code quality issues, such as SQL injection risks and improper certificate validation. One significant benefit of using Snyk is its real-time scanning capability, which provided immediate feedback on security flaws as the code was being reviewed. A second key benefit is its actionable remediation advice, which not only identifies the line of code causing the issue but often provides context-aware fix suggestions, significantly reducing the time required for the remediation phase
+\subsection{Snyk Code}
 
-Nessus, from Tenable was used to scan the hosted version of that website.
+\par \textbf{Snyk Code was employed as the primary Static Application Security Testing (SAST) tool to implement the defensive security strategy. This tool integrates directly into the development workflow to analyze the source code for security vulnerabilities without requiring code execution. For this investigation, we utilized Snyk's capability to parse the application's dependency tree and source files to identify known vulnerabilities (CVEs) and code quality issues, such as SQL injection risks and improper certificate validation. One significant benefit of using Snyk is its real-time scanning capability, which provided immediate feedback on security flaws as the code was being reviewed. A second key benefit is its actionable remediation advice, which not only identifies the line of code causing the issue but often provides context-aware fix suggestions, significantly reducing the time required for the remediation phase} 
+
+\subsection{Burp Suite}
 
 \par \textbf{Burp Suite Community Edition} was the core tool for the offensive approach. It is a comprehensive platform for web application security testing.
 \begin{itemize}
@@ -257,7 +268,8 @@ Nessus, from Tenable was used to scan the hosted version of that website.
     \label{fig:burp_history}
 \end{figure}
 
-\subsubsection{Nessus}
+\subsection{Nessus}
+Nessus, from Tenable was used to scan the hosted version of that website.
 This is what host discovery looks like in this tool.
 
 \begin{figure}[H]
@@ -704,13 +716,13 @@ Now this would work if the credentials were already preffilled inside the form, 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.25\linewidth]{Figures/snyk-report-before-fix.png}
+\includegraphics[width=0.7\linewidth]{Figures/snyk-report-before-fix.png}
 \caption{\label{fig:initial-report} Initial Snyk Scan Report Summary }
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.25\linewidth]{Figures/snyk-report-before-fix.png}
+\includegraphics[width=0.7\linewidth]{Figures/snyk-report-after-fix.png}
 \caption{\label{fig:initial-report} Snyk Re-Scan Report Summary showing reduced vulnerability count }
 \end{figure}
 
