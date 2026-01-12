@@ -1,0 +1,243 @@
+\documentclass{beamer}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{authoraftertitle}
+\usepackage{fontspec}
+\usepackage{listings}
+
+% Setarea fonturilor specifice sablonului
+\setsansfont{Oswald}[Path=./OswaldFontFiles/,Scale=0.9,Extension=.ttf,UprightFont=*-Regular,BoldFont=*-Bold]
+\setromanfont{Lato}[Path=./LatoFontFiles/,Scale=0.9,Extension=.ttf,UprightFont=*-Regular,BoldFont=*-Bold]    
+
+\setbeamertemplate{navigation symbols}{}
+% Asigura-te ca imaginea de fundal exista in folderul img/
+\setbeamertemplate{background}{\includegraphics[width=\paperwidth,height=\paperheight]{img/slider-in.jpg}}
+
+% --- INFORMATIILE ECHIPE FATA ---
+\author{S. Ioan-Victor, S. Hojda, T. Copaciu}
+\title{Security Analysis of VulnBank Application}
+% Folosim campurile sablonului pentru informatii despre curs
+\newcommand\Facultate{Quality Aspects of Security in Software Testing}
+\newcommand\Universitate{QASST Project 2026}
+\newcommand\Adresa{Babe\c{s}-Bolyai University}
+\newcommand\Website{CS Master - CyberSecurity}
+\newcommand\DataPrezentarii{12/01/2026}
+
+\usepackage{CSTheme_EN}
+
+\definecolor{codegray}{rgb}{0.95,0.95,0.95}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{codegray},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\begin{document}
+
+% --- SLIDE 1: TITLE PAGE ---
+\include{custom/title}
+
+% --- SLIDE 2: AGENDA (Adaptat pe structura sablonului) ---
+\newcommand\sectionTitle{Overview}
+\newcommand\sectionSubtitle{Presentation Agenda}
+\newcommand\sectionMotto{Software Tested, Strategy, Exploitation \& Remediation}
+\include{custom/section-template-1-50}
+
+\begin{frame}{Presentation Contents}
+    \begin{itemize}
+        \item \textbf{Target:} VulnBank Application Overview
+        \item \textbf{Methodology:} Hybrid Approach (Defensive \& Offensive)
+        \item \textbf{Findings:} Summary of Identified Vulnerabilities
+        \item \textbf{Deep Dive:} Offensive Exploitation (SQL Injection)
+        \item \textbf{Resolution:} Remediation Steps \& Conclusions
+    \end{itemize}
+\end{frame}
+
+% --- SECTIUNEA 1: SOFTWARE TESTED ---
+\renewcommand*\sectionTitle{Software Tested}
+\renewcommand*\sectionSubtitle{VulnBank Application}
+\include{custom/section-template-2}
+
+\begin{frame}{Target Application: VulnBank}
+\begin{minipage}{0.55\linewidth}
+        \begin{itemize}
+            \item \textbf{Type:} Intentionally vulnerable banking simulation (Web \& API).
+            \item \textbf{Critical Features:} 
+            \begin{itemize}
+                \item Fund Transfers
+                \item Loan Requests
+                \item Profile Management
+            \end{itemize}
+            \item \textbf{Why this target?} It handles sensitive financial data (PII, Transactions), making it an ideal candidate for security testing.
+        \end{itemize}
+ \end{minipage}
+ \begin{minipage}{0.4\linewidth}
+    \begin{figure}[h]
+        \centering
+        % Inlocuieste cu calea corecta a imaginii tale
+        \includegraphics[width=\linewidth]{Figures/vuln_dashboard.png}
+        \caption{VulnBank Dashboard}
+    \end{figure}
+\end{minipage}
+\end{frame}
+
+% --- SECTIUNEA 2: STRATEGY ---
+\renewcommand*\sectionTitle{Security Approach}
+\renewcommand*\sectionSubtitle{Hybrid Strategy}
+\include{custom/section-template-2}
+
+\begin{frame}{Hybrid Strategy: White-box \& Black-box}
+\begin{minipage}[t]{0.48\linewidth}
+\begin{block}{\centering Defensive (White-box)}
+        \begin{itemize}
+            \item \textbf{Tool:} Snyk (SAST)
+            \item \textbf{Focus:} Code Quality \& Configuration
+            \item \textbf{Key Findings:}
+            \begin{itemize}
+                \item Insecure Code Patterns (f-strings)
+                \item SSL Verification Disabled
+                \item Missing Cookie Attributes
+            \end{itemize}
+        \end{itemize}
+\end{block}        
+ \end{minipage}
+  \hspace{0.08\textwidth}%
+ \begin{minipage}[t]{0.42\linewidth}
+\begin{block}{\centering Offensive (Black-box)}        
+        \begin{itemize}
+            \item \textbf{Tools:} Burp Suite, Nessus (DAST)
+            \item \textbf{Focus:} Runtime Exploitation
+            \item \textbf{Key Findings:}
+            \item \textbf{SQL Injection (API)}
+            \item API Documentation Exposure
+            \item Cleartext Credentials
+        \end{itemize}
+ \end{block}        
+\end{minipage}
+\end{frame}
+
+% --- SECTIUNEA 3: FINDINGS & EXPLOIT ---
+\renewcommand*\sectionTitle{Critical Findings}
+\renewcommand*\sectionSubtitle{Offensive Exploitation}
+\include{custom/section-template-2}
+
+\begin{frame}{Vulnerability Summary}
+    \textbf{Defensive Analysis (Snyk):}
+    \begin{itemize}
+        \item SQL Injection in \texttt{app.py} (High)
+        \item Improper Certificate Validation (High)
+        \item DOM-based XSS (Medium)
+    \end{itemize}
+    \vspace{0.5cm}
+    \textbf{Offensive Analysis :}
+    \begin{itemize}
+\item (Burp Suite) \color{red}\textbf{Critical SQL Injection in /api/transactions}
+\item API Documentation Exposure (/api/docs)
+\item Nessus: PlainText Credentials
+\item Clickbaiting.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Exploitation: SQL Injection (Manual)}
+    \begin{itemize}
+        \item \textbf{Endpoint:} \texttt{GET /api/transactions}
+        \item \textbf{Method:} Intercepted request via Burp Suite Proxy.
+        \item \textbf{Payload:} \texttt{' OR '1'='1}
+        \item \textbf{Result:} The server returned the transaction history for \textbf{ALL} users.
+    \end{itemize}
+    \begin{figure}[h]
+        \centering
+        % Asigura-te ca imaginea e in folderul Figures
+        \includegraphics[height=0.45\textheight]{Figures/api_burpsuite_repeater.png}
+        \caption{Burp Suite Repeater Proof of Concept}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}{Automatic Plaintext exploit}
+    \begin{itemize}
+        \item Set up MitM
+        \item Intercept.
+        \item Profit
+    \end{itemize}
+    \begin{lstlisting}[language=Bash]
+    > uv run proxy.py
+    [*] Proxy Server Started, listening on 0.0.0.0:8080 (everywhere)
+    [*] But local IP Address is 192.168.0.94:8080
+    so Configure your second device to connect to that as an HTTP Proxy
+    
+    
+    [+] INTERCEPTED POST REQUEST TO: vulnbank.org
+        [!] CREDENTIALS FOUND IN BODY:
+        {"username":"suuup dude","password":"sper ca nu vezi aasta lol lmao that woild be so emberssaing"}
+    --------------------------------------------------
+    \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}{Clickbaiting exploit}
+    \begin{itemize}
+        \item Load transparent Iframe that contains some logging in info, or anything important that the user doesn't neccesarily want to click.
+        \item Load something unassuming below it
+        \item Profit
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.45\textheight]{Figures/theghostly-figure.png}
+        \caption{Ghostly iframe}
+    \end{figure}
+    \end{itemize}
+\end{frame}
+
+
+% --- SECTIUNEA 4: REMEDIATION ---
+\renewcommand*\sectionTitle{Remediation}
+\renewcommand*\sectionSubtitle{Fixing the Issues}
+\include{custom/section-template-2}
+
+\begin{frame}{Remediation Steps & Reporting}
+    \begin{block}{1. Fixing SQL Injection}
+    Replaced dynamic SQL concatenation with \textbf{Parameterized Queries} (Prepared Statements).
+    \end{block}
+    
+    \begin{block}{2. Hardening API}
+    Disabled Swagger UI in production environment and enforced Authentication on docs endpoints.
+    \end{block}
+    
+    \begin{block}{3. Reporting (RIMSEC)}
+    Reported as \textbf{High Severity}.
+    \begin{itemize}
+        \item \textbf{R}eproducible: 100\% via Burp.
+        \item \textbf{I}mpact: Critical Data Leak.
+        \item \textbf{M}itigation: Code patch applied.
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+% --- CONCLUSIONS ---
+\begin{frame}{Conclusions}
+\begin{itemize}
+    \item \textbf{Synergy:} The Defensive approach (SAST) identified potential flaws, while the Offensive approach (DAST) validated their real-world impact.
+    \item \textbf{Tooling:} Automated tools (Nessus/Snyk) are excellent for baselines, but manual testing (Burp Suite) is essential for logic flaws like the API SQL Injection.
+    \item \textbf{Lesson Learned:} Security must be layered. A simple configuration error (exposed docs) led to a critical data breach.
+\end{itemize}
+\end{frame}
+
+% --- CONTACT PAGE ---
+\include{custom/contact}
+
+\end{document}
