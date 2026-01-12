@@ -4,6 +4,9 @@
 % Replace `english' with e.g. `spanish' to change the document language
 \usepackage[english]{babel}
 \usepackage{float}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{listings}
 
 % Set page size and margins
 % Replace `letterpaper' with `a4paper' for UK/EU standard size
@@ -14,6 +17,25 @@
 \usepackage{graphicx}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{xcolor}
+
+\definecolor{codegray}{rgb}{0.95,0.95,0.95}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{codegray},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
 
 \title{\textbf{QASST Project}}
 \author{
@@ -134,17 +156,18 @@ Our strategy was structured in three main phases:
 
 Found by Nessus (names and descriptions provided by Nexus): \\
 
-\textbf{Vulerability 07: Web Application Potentially Vulnerable to Clickjacking CVE-2025-64387.}
-
-Description\\
-The remote web server does not set an X-Frame-Options response header or a Content-Security-Policy 'frame-ancestors' response header in all content responses. This could potentially expose the site to a clickjacking or UI redress attack, in which an attacker can trick a user into clicking an area of the vulnerable page that is different than what the user perceives the page to be. This can result in a user performing fraudulent or malicious transactions.
-
-\textbf{Vulerability 08: Web Server Transmits Cleartext Credentials CWE-319}
+\textbf{Vulerability 07: Web Server Transmits Cleartext Credentials CWE-319}
 
 Description: \\
 The remote web server contains several HTML form fields containing an input of type 'password' which transmit their information to a remote web server in cleartext.
 
 An attacker eavesdropping the traffic between web browser and server may obtain logins and passwords of valid users.
+
+
+\textbf{Vulerability 08: Web Application Potentially Vulnerable to Clickjacking CVE-2025-64387.}
+
+Description\\
+The remote web server does not set an X-Frame-Options response header or a Content-Security-Policy 'frame-ancestors' response header in all content responses. This could potentially expose the site to a clickjacking or UI redress attack, in which an attacker can trick a user into clicking an area of the vulnerable page that is different than what the user perceives the page to be. This can result in a user performing fraudulent or malicious transactions.
 
 
 
@@ -359,7 +382,22 @@ Nessus found: Web Server Transmits Cleartext Credentials.
     \caption{Nessus-found cleartext creds vuln.}
 \end{figure}
 
-As well as: Web Application Potentially Vulnerable to Clickjacking.
+\textbf{Technique Employed:} Specification-Based Testing (Black Box Inspection) and some manual inspection, as well as automated scripts. \\
+
+\begin{longtable}{|p{2cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{2cm}|}
+\hline
+\textbf{TC ID} & \textbf{Input / Action} & \textbf{Expected Output} & \textbf{Actual Result} & \textbf{Feature} \\
+\hline
+TC-AUTH-01 & Navigate to \texttt{http://www.vulnbank.org/login} and inspect the page protocol. & The browser should automatically redirect to \texttt{https://}. & The page loads over \texttt{http://} without redirection. & Login \\
+\hline
+TC-AUTH-02 & Inspect the HTML source code of the Login form \texttt{<form>} tag. & The \texttt{action} attribute should point to an absolute \texttt{https://} URL. & The \texttt{action} attribute is relative (or \texttt{http}), inheriting the insecure protocol. & Login \\
+\hline
+TC-AUTH-03 & Submit dummy credentials (user: \textit{test}, pass: \textit{Secret123}) while monitoring network traffic. & The payload should be encrypted (not readable in plain text). & The payload is visible in cleartext in the POST body. & Login / Register \\
+\hline
+\end{longtable}
+
+
+It also identified Web Application Potentially Vulnerable to Clickjacking.
 
 
 \begin{figure}[H]
@@ -390,6 +428,20 @@ As well as: Web Application Potentially Vulnerable to Clickjacking.
     \label{fig:sqli_proof}
 \end{figure}
 
+For Vulerability 07:
+
+\begin{enumerate}
+    \item \textbf{Setup:} open a browser at
+    \item \textbf{Inspect:} Open the develop tools network tab as sending the request.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/nessus/credential-unencrypted.png}
+    \caption{unencrypted password}
+\end{figure}
+
+
 \subsection{Automated Exploit (POC)}
 \label{label:AutomatedExploit}
 
@@ -415,6 +467,70 @@ def exploit_sqli():
     except Exception as e:
         print(f"[!] Error: {e}")
 \end{verbatim}
+
+
+\subsubsection{Vulnerability 07:}
+
+The following Python script that i definately wrote all by myself sends a POST request over HTTP and confirms that the server processes it without enforcing an SSL upgrade.
+
+\begin{lstlisting}[language=Python, caption=Cleartext Submission Verification Script]
+import requests
+import sys
+
+
+def verify_cleartext_submission(target_url):
+    print(f"[*] Testing target: {target_url}")
+
+    payload = {
+        "username": "admin",
+        "password": "SuperSecretPassword",
+        "login": "true",
+    }
+
+    if target_url.startswith("https://"):
+        print("[-] Target is using HTTPS. Vulnerability may not exist.")
+        return
+
+    try:
+        response = requests.post(target_url, data=payload, allow_redirects=False)
+
+        print(f"[*] Request sent to: {response.url}")
+        print(f"[*] Response Status Code: {response.status_code}")
+
+        if "http://" in response.url and response.status_code != 301:
+            print("[!] VULNERABILITY CONFIRMED: Credentials sent over cleartext HTTP.")
+            print("[!] Data exposed on the wire:")
+            print(f"    {payload}")
+        elif response.status_code in [301, 302] and "https" in response.headers.get(
+            "Location", ""
+        ):
+            print("[-] Server redirects to HTTPS. Mitigated.")
+        else:
+            print("[?] Inconclusive response.")
+
+    except Exception as e:
+        print(f"[!] Error executing exploit test: {e}")
+
+
+if __name__ == "__main__":
+    TARGET = "http://www.vulnbank.org/login"
+    verify_cleartext_submission(TARGET)
+\end{lstlisting}
+
+Running it shows:
+
+
+\begin{lstlisting}[language=Bash]
+>  uv run redirection.py
+[*] Testing target: http://www.vulnbank.org/login
+[*] Request sent to: http://www.vulnbank.org/login
+[*] Response Status Code: 500
+[!] VULNERABILITY CONFIRMED: Credentials sent over cleartext HTTP.
+[!] Data exposed on the wire:
+    {'username': 'admin', 'password': 'SuperSecretPassword', 'login': 'true'}
+\end{lstlisting}
+
+Now something cooler I've tried is intercepting the data from the a sepparate machine. The idea is that in testing environments, man in the middle attacks are usually performed (apparently) via a proxy, so I created a proxy whose source-code would be too long for this document probabily, but I could show it live, which intercepts the requests and their cleartext credentials.
 
 
 \section{Remediation Steps}
