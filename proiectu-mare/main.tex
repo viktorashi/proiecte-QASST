@@ -530,7 +530,45 @@ Running it shows:
     {'username': 'admin', 'password': 'SuperSecretPassword', 'login': 'true'}
 \end{lstlisting}
 
-Now something cooler I've tried is intercepting the data from the a sepparate machine. The idea is that in testing environments, man in the middle attacks are usually performed (apparently) via a proxy, so I created a proxy whose source-code would be too long for this document probabily, but I could show it live, which intercepts the requests and their cleartext credentials.
+Now something cooler I've tried is intercepting the data from the a sepparate machine. The idea is that in testing environments, man in the middle attacks are usually performed (apparently) via a proxy, so I created a proxy whose source-code would be too long for this document probably, but I could show it live, which intercepts the requests and their cleartext credentials.
+
+On the device running the proxy im doing:
+\begin{lstlisting}[language=Bash]
+> uv run proxy.py
+[*] Proxy Server Started, listening on 0.0.0.0:8080 (everywhere)
+[*] But local IP Address is 192.168.0.94:8080
+so Configure your second device to connect to that as an HTTP Proxy
+\end{lstlisting}
+
+Then, from my phone I set that as a proxy in the Android Wifi settings, basically setting myself up for the attack:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.45\textheight,keepaspectratio]{Figures/nessus/setting-proxy.jpeg}
+    \caption{Setting my proxy}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.45\textheight,keepaspectratio]{Figures/nessus/fillling-in-the-form.jpeg}
+    \caption{Filling in my form}
+\end{figure}
+
+And then lo and behold:
+
+\begin{lstlisting}[language=Bash]
+> uv run proxy.py
+[*] Proxy Server Started, listening on 0.0.0.0:8080 (everywhere)
+[*] But local IP Address is 192.168.0.94:8080
+so Configure your second device to connect to that as an HTTP Proxy
+
+
+[+] INTERCEPTED POST REQUEST TO: vulnbank.org
+    [!] CREDENTIALS FOUND IN BODY:
+    {"username":"suuup dude","password":"sper ca nu vezi aasta lol lmao that woild be so emberssaing"}
+--------------------------------------------------
+\end{lstlisting}
+
 
 
 \section{Remediation Steps}
