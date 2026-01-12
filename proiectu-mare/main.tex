@@ -406,6 +406,21 @@ It also identified Web Application Potentially Vulnerable to Clickjacking.
     \caption{Clickjacking vulnerability.}
 \end{figure}
 
+The test cases here would be:
+
+\begin{longtable}{|p{2cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{2cm}|}
+\hline
+\textbf{TC ID} & \textbf{Input / Action} & \textbf{Expected Output} & \textbf{Actual Result} & \textbf{Feature} \\
+\hline
+TC-CJ-01 & Send a GET request to the target URL and inspect HTTP Response Headers. & The header \texttt{X-Frame-Options} should be present with values \texttt{DENY} or \texttt{SAMEORIGIN}. & The \texttt{X-Frame-Options} header is completely missing from the response. & Global HTTP Headers \\
+\hline
+TC-CJ-02 & Send a GET request to the target URL and inspect \texttt{Content-Security-Policy} (CSP). & The CSP header should contain the \texttt{frame-ancestors} directive restricting framing sources. & The \texttt{Content-Security-Policy} header is missing or lacks the \texttt{frame-ancestors} directive. & Global HTTP Headers \\
+\hline
+TC-CJ-03 & Create a local HTML file containing an \texttt{<iframe src="http://www. vulnbank.org">} and open it in a browser. & The browser should refuse to render the content within the frame (e.g., "refused to connect"). & The target website renders successfully inside the iframe without errors. & UI / Rendering \\
+\hline
+\end{longtable}
+
+And they'll all be a part of the POC's section.
 
 
 \section{Vulnerability Exploit}
@@ -569,7 +584,83 @@ so Configure your second device to connect to that as an HTTP Proxy
 --------------------------------------------------
 \end{lstlisting}
 
+\subsubsection{Vulerability 08, Clickjacking:}
 
+\begin{lstlisting}[language=Python, caption=checking if it's clickjackable]
+import requests
+
+
+def check_clickjacking_headers(url):
+    print(f"[*] Analyzing headers for: {url}")
+    print("-" * 60)
+
+    try:
+        response = requests.get(url, timeout=10)
+        headers = response.headers
+
+        xfo = headers.get("X-Frame-Options", None)
+
+        if xfo:
+            print(f"[+] X-Frame-Options header found: {xfo}")
+            if xfo.upper() in ["DENY", "SAMEORIGIN"]:
+                print("    -> Status: SECURE (TC-CJ-01 Passed)")
+            else:
+                print(
+                    "    -> Status: WEAK (Header present but value might be insufficient)"
+                )
+        else:
+            print("[-] X-Frame-Options header MISSING")
+            print("    -> Status: VULNERABLE (TC-CJ-01 Failed)")
+
+        print("-" * 60)
+
+        csp = headers.get("Content-Security-Policy", None)
+
+        if csp:
+            print(f"[+] Content-Security-Policy header found.")
+
+            if "frame-ancestors" in csp:
+                print(f"    -> Directive 'frame-ancestors' found: {csp}")
+                print("    -> Status: SECURE (TC-CJ-02 Passed)")
+            else:
+                print("    -> 'frame-ancestors' directive MISSING in CSP.")
+                print("    -> Status: POTENTIALLY VULNERABLE (TC-CJ-02 Failed)")
+        else:
+            print("[-] Content-Security-Policy header MISSING")
+            print("    -> Status: VULNERABLE (TC-CJ-02 Failed)")
+
+        print("-" * 60)
+
+        if not xfo and (not csp or "frame-ancestors" not in csp):
+            print("[!] CRITICAL: No clickjacking protections detected.")
+            print("    The site is likely vulnerable to UI Redress Attacks.")
+        elif xfo or (csp and "frame-ancestors" in csp):
+            print("[*] PASS: At least one protection mechanism is in place.")
+
+    except requests.exceptions.RequestException as e:
+        print(f"[!] Error connecting to target: {e}")
+
+
+if __name__ == "__main__":
+    TARGET_URL = "http://www.vulnbank.org"
+    check_clickjacking_headers(TARGET_URL)
+\end{lstlisting}
+
+running it:
+
+\begin{lstlisting}[language=Bash]
+> uv run check_clickjacking.py
+[*] Analyzing headers for: http://www.vulnbank.org
+------------------------------------------------------------
+[-] X-Frame-Options header MISSING
+    -> Status: VULNERABLE (TC-CJ-01 Failed)
+------------------------------------------------------------
+[-] Content-Security-Policy header MISSING
+    -> Status: VULNERABLE (TC-CJ-02 Failed)
+------------------------------------------------------------
+[!] CRITICAL: No clickjacking protections detected.
+    The site is likely vulnerable to UI Redress Attacks.
+\end{lstlisting}
 
 \section{Remediation Steps}
 \label{sec:Remediation}
