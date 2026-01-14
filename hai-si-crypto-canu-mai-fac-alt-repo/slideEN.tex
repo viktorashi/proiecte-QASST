@@ -395,7 +395,110 @@
 
 \end{frame}
 
-% SLIDE 10: BULLETPROOFS
+% SLIDE 10: Arithmetization (The Trace)
+\begin{frame}{Step 1: Arithmetization (Trace to Polynomial)}
+    \small
+    How do we turn a computer program into a math problem?
+    
+    \vspace{0.2cm}
+
+    \begin{columns}
+        % COLUMN 1: The Execution Trace
+        \begin{column}{0.45\textwidth}
+            \textbf{1. Execution Trace} \\
+            \textit{A table of the computation state at every step.}
+            \vspace{0.2cm}
+            \begin{table}
+                \centering
+                \begin{tabular}{|c|c|}
+                    \hline
+                    \textbf{Step} ($i$) & \textbf{Value} ($x_i$) \\
+                    \hline
+                    0 & 3 \\
+                    1 & 9 \\
+                    2 & 81 \\
+                    3 & 6561 \\
+                    \hline
+                \end{tabular}
+            \end{table}
+        \end{column}
+
+        % COLUMN 2: Interpolation
+        \begin{column}{0.55\textwidth}
+            \textbf{2. Interpolation} \\
+            \textit{We find a polynomial $T(x)$ that passes through these points.}
+            \vspace{0.3cm}
+            
+            \[
+            T(g^i) = x_i
+            \]
+            \vspace{0.1cm}
+            \begin{itemize}
+                \footnotesize
+                \item The steps are mapped to a finite field generator $g$.
+                \item $T(x)$ captures the \textbf{entire} history of the computation in a single curve.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% SLIDE 11: Constraints & The Quotient
+\begin{frame}{Step 2: The "Honesty" Check}
+    \small
+    We define a rule (Constraint) that must equal \textbf{Zero} if the computation is valid.
+    
+    \vspace{0.2cm}
+
+    \begin{block}{1. The Transition Constraint $C(x)$}
+        For a rule like $x_{next} = x^2$, the constraint is:
+        \[ C(T(x)) = T(g \cdot x) - T(x)^2 = 0 \]
+        \textit{(This must be zero at every valid step $g^0, g^1, \dots$)}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{2. The Quotient Polynomial $Q(x)$}
+        If the Prover is honest, $C(T(x))$ is perfectly divisible by the \textbf{Vanishing Polynomial} $Z(x)$ (which is zero at all steps).
+        
+        \[ Q(x) = \frac{C(T(x))}{Z(x)} \]
+        
+        \begin{itemize}
+            \item \textbf{Honest:} $Q(x)$ is a clean, low-degree polynomial.
+            \item \textbf{Cheating:} The division fails (remainder) or degree explodes.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+% SLIDE 12: The Spot Check (Verification)
+\begin{frame}{Step 3: The Verification (Soundness)}
+    \small
+    The Verifier does not check the whole table. They check a random point.
+    
+    \vspace{0.3cm}
+
+    \textbf{The Protocol:}
+    \begin{enumerate}
+        \setlength\itemsep{0.6em}
+        \item \textbf{Commit:} Prover sends Merkle Root of $T(x)$ and $Q(x)$.
+        \item \textbf{Challenge:} Verifier picks a random point $z$ (e.g., $z=42$).
+        \item \textbf{Query:} Prover reveals $T(z), T(g \cdot z), Q(z)$.
+        \item \textbf{Check:} Verifier runs the equation locally:
+    \end{enumerate}
+
+    \vspace{0.2cm}
+    
+    \begin{center}
+        \fcolorbox{black}{yellow!10}{
+            \Large $T(g \cdot z) - T(z)^2 \stackrel{?}{=} Q(z) \cdot Z(z)$
+        }
+    \end{center}
+
+    \vspace{0.3cm}
+    \footnotesize
+    \textit{*Plus a "Low Degree Test" (FRI) to ensure $T(x)$ isn't just random noise fitting the points.}
+\end{frame}
+
+% SLIDE 11: BULLETPROOFS
 \begin{frame}{Bulletproofs: The Middle Ground}
 
     \small
@@ -486,7 +589,7 @@
 
 \end{frame}
 
-% SLIDE 12: REAL-WORLD APPLICATIONS (ING, StarkWare, EY) - NO DIAGRAM
+% SLIDE 13: REAL-WORLD APPLICATIONS (ING, StarkWare, EY) - NO DIAGRAM
 \begin{frame}{Real-World Applications}
 
     \footnotesize % Smaller font to fit the template margins
@@ -508,7 +611,7 @@
     \end{itemize}
 
 \end{frame}
-% SLIDE 13: CONCLUSIONS (FIXED)
+% SLIDE 14: CONCLUSIONS (FIXED)
 \begin{frame}{Conclusions}
 
     \small 
@@ -536,7 +639,7 @@
 \end{frame}
 
 
-% SLIDE 14: REFERENCES (UPDATED WITH CORRECT ING WHITEPAPER)
+% SLIDE 15: REFERENCES (UPDATED WITH CORRECT ING WHITEPAPER)
 \begin{frame}{References}
 
     \tiny % Smallest available font size to fit everything
@@ -590,7 +693,7 @@
 
 \end{frame}
 
-% SLIDE 15: Q&A / THANK YOU
+% SLIDE 16: Q&A / THANK YOU
 \begin{frame}
     \centering
     \vspace{1cm}
