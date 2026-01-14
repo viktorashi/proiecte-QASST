@@ -398,7 +398,7 @@
 % SLIDE 10: Arithmetization (The Trace)
 \begin{frame}{Step 1: Arithmetization (Trace to Polynomial)}
     \small
-    How do we turn a computer program into a math problem?
+    How to prove we've actually processed some data? (Prover's side)
     
     \vspace{0.2cm}
 
@@ -406,7 +406,7 @@
         % COLUMN 1: The Execution Trace
         \begin{column}{0.45\textwidth}
             \textbf{1. Execution Trace} \\
-            \textit{A table of the computation state at every step.}
+            \textit{Record it privately}
             \vspace{0.2cm}
             \begin{table}
                 \centering
@@ -437,6 +437,7 @@
                 \footnotesize
                 \item The steps are mapped to a finite field generator $g$.
                 \item $T(x)$ captures the \textbf{entire} history of the computation in a single curve.
+                \item All this becomes \textbf{the witness}
             \end{itemize}
         \end{column}
     \end{columns}
@@ -445,7 +446,7 @@
 % SLIDE 11: Constraints & The Quotient
 \begin{frame}{Step 2: The "Honesty" Check}
     \small
-    We define a rule (Constraint) that must equal \textbf{Zero} if the computation is valid.
+    We define a rule (Constraint) that must equal \textbf{Zero} if the computation is valid. This is public
     
     \vspace{0.2cm}
 
