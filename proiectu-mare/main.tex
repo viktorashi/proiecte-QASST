@@ -194,6 +194,8 @@ The effect these vulnerabilites have on the assets is presented below.
 2 & Improper certificate validation & \textbf{file:} \texttt{app.py} \newline \textbf{function:} \texttt{upload\_profile\_picture\_url} \newline \textbf{communication:} External HTTP requests (SSL/TLS) \\ \hline
 3 & DOM-based Cross-site scripting & \textbf{file:} \texttt{templates/forgot\_password.html} \newline \textbf{component:} DOM element \texttt{'message'} \newline \textbf{data:} User browser session, frontend UI \\ \hline
 4 & Sensitive cookie without 'secure' attribute & \textbf{file:} \texttt{app.py} \newline \textbf{function:} \texttt{login} \newline \textbf{token:} JWT session token (\texttt{'token'} cookie) \\ \hline
+5 & Web Server Transmits Cleartext Credentials CWE-319 & \textbf{file:} \texttt{app.py} \newline \textbf{function:} \texttt{login} \newline \textbf{token:} JWT session token (\texttt{'token'} cookie) \\ \hline
+6 & Clickjacking CVE-2025-64387 & \textbf{file:} \texttt{app.py} & \textbf{data:} User browser session, frontend UI \\ \hline
 \end{tabular}
 \end{table}
 
