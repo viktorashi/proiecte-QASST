@@ -1,119 +1,250 @@
-\documentclass{article}
+\documentclass[10pt, a4paper, twocolumn]{article}
 
-% Language setting
-% Replace `english' with e.g. `spanish' to change the document language
-\usepackage[english]{babel}
+% --- UNIVERSAL PREAMBLE BLOCK ---
+\usepackage[a4paper, top=2cm, bottom=2cm, left=1.5cm, right=1.5cm]{geometry}
+\usepackage{fontspec}
 
-% Set page size and margins
-% Replace `letterpaper' with `a4paper' for UK/EU standard size
-\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage[english, provide=*]{babel}
+\babelprovide[import, onchar=ids fonts]{english}
 
-% Useful packages
-\usepackage{amsmath}
-\usepackage{graphicx}
-\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+% Set default/Latin font to Sans Serif in the main (rm) slot
+\babelfont{rm}{Noto Sans}
 
-\title{Offensive Security}
-\author{Stan Ioan-Victor}
+% Load necessary packages for the report
+\usepackage{booktabs}   % For professional tables
+\usepackage{graphicx}   % For image placeholders
+\usepackage{float}      % For figure positioning
+\usepackage{titlesec}   % For section formatting
+\usepackage{amsmath}    % For math symbols
+\usepackage{enumitem}   % For better list control
+\usepackage{listings}   % For code snippets
+\usepackage{xcolor}     % For code coloring
+
+% Optimize section spacing for the 2-column layout
+\titlespacing*{\section}{0pt}{1.2ex plus .2ex minus .2ex}{.8ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1ex plus .2ex minus .2ex}{.5ex plus .2ex}
+
+% Define a simple code style
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    captionpos=b
+}
+
+\title{\textbf{Technical Analysis of Nintendo Switch Security Exploitation and Custom Firmware Architecture}}
+\author{Five nights at freddy's 5 \\ \textit{Software Engineering Research}}
+\date{\today}
 
 \begin{document}
+
 \maketitle
 
 \begin{abstract}
-Your abstract.
+This report provides an exhaustive technical analysis of the modification of the "Mariko" revision of the Nintendo Switch (Tegra X1 T210B01). It details the transition from software-based exploitation to hardware-based Voltage Fault Injection (VFI). The analysis dissects the operation of HWFLY/Picofly modchips, the low-level architecture of the Hekate bootloader, and the kernel-level modifications performed by the Atmosphere Custom Firmware (CFW), specifically the "Mesosphere" kernel reimplementation. Furthermore, it examines storage virtualization mechanisms (emuMMC) and concludes with a comparative engineering analysis between Switch modification and Android device rooting, focusing on privilege models and persistence.
 \end{abstract}
 
 \section{Introduction}
 
-Your introduction goes here! Simply start writing your document and use the Recompile button to view the updated PDF preview. Examples of commonly used commands and features are listed below, to help you get started.
+The security architecture of the Nintendo Switch represents a significant evolution in console Digital Rights Management (DRM). Built upon the NVIDIA Tegra X1 system-on-chip (SoC), the console utilizes a sophisticated Chain of Trust designed to ensure that only code cryptographically signed by Nintendo can execute.
 
-Once you're familiar with the editor, you can find various project settings in the Overleaf menu, accessed via the button in the very top left of the editor. To view tutorials, user guides, and further documentation, please visit our \href{https://www.overleaf.com/learn}{help library}, or head to our plans page to \href{https://www.overleaf.com/user/subscription/plans}{choose your plan}.
+However, the discovery of fundamental vulnerabilities in the silicon itself catalyzed a vibrant hardware hacking scene. The landscape is divided into two distinct eras defined by the hardware revision of the Tegra SoC.
 
-\section{Some examples to get started}
+\subsection{Erista vs. Mariko Silicon}
+The lineage of the Tegra X1 chip is critical to understanding the security landscape:
 
-\subsection{How to create Sections and Subsections}
-
-Simply use the section and subsection commands, as in this example document! With Overleaf, all the formatting and numbering is handled automatically according to the template you've chosen. If you're using the Visual Editor, you can also create new section and subsections via the buttons in the editor toolbar.
-
-\subsection{How to include Figures}
-
-First you have to upload the image file from your computer using the upload link in the file-tree menu. Then use the includegraphics command to include it in your document. Use the figure environment and the caption command to add a number and a caption to your figure. See the code for Figure \ref{fig:frog} in this section for an example.
-
-Note that your figure will automatically be placed in the most appropriate place for it, given the surrounding text and taking into account other figures or tables that may be close by. You can find out more about adding images to your documents in this help article on \href{https://www.overleaf.com/learn/how-to/Including_images_on_Overleaf}{including images on Overleaf}.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.25\linewidth]{frog.jpg}
-\caption{\label{fig:frog}This frog was uploaded via the file-tree menu.}
-\end{figure}
-
-\subsection{How to add Tables}
-
-Use the table and tabular environments for basic tables --- see Table~\ref{tab:widgets}, for example. For more information, please see this help article on \href{https://www.overleaf.com/learn/latex/tables}{tables}.
-
-\begin{table}
-\centering
-\begin{tabular}{l|r}
-Item & Quantity \\\hline
-Widgets & 42 \\
-Gadgets & 13
-\end{tabular}
-\caption{\label{tab:widgets}An example table.}
-\end{table}
-
-\subsection{How to add Comments and Track Changes}
-
-Comments can be added to your project by highlighting some text and clicking ``Add comment'' in the top right of the editor pane. To view existing comments, click on the Review menu in the toolbar above. To reply to a comment, click on the Reply button in the lower right corner of the comment. You can close the Review pane by clicking its name on the toolbar when you're done reviewing for the time being.
-
-Track changes are available on all our \href{https://www.overleaf.com/user/subscription/plans}{premium plans}, and can be toggled on or off using the option at the top of the Review pane. Track changes allow you to keep track of every change made to the document, along with the person making the change.
-
-\subsection{How to add Lists}
-
-You can make lists with automatic numbering \dots
-
-\begin{enumerate}
-\item Like this,
-\item and like this.
-\end{enumerate}
-\dots or bullet points \dots
 \begin{itemize}
-\item Like this,
-\item and like this.
+    \item \textbf{Erista (T210):} Found in launch units (2017). Contained the "Fusée Gelée" vulnerability (CVE-2018-6242) in the BootROM USB recovery stack. This allowed attackers to overflow a buffer during Recovery Mode (RCM) and gain arbitrary code execution before signature verification. This was an unpatchable read-only memory (ROM) bug.
+    \item \textbf{Mariko (T210B01):} Introduced in 2019 (v2, Lite, OLED). NVIDIA removed the susceptible code path in the BootROM, patched the USB stack, and hardened the hardware against simple voltage irregularities.
 \end{itemize}
 
-\subsection{How to write Mathematics}
+The shift to Mariko necessitated a return to hardware-based exploitation techniques, specifically targeting the physical integrity of the execution pipeline via modchips.
 
-\LaTeX{} is great at typesetting mathematics. Let $X_1, X_2, \ldots, X_n$ be a sequence of independent and identically distributed random variables with $\text{E}[X_i] = \mu$ and $\text{Var}[X_i] = \sigma^2 < \infty$, and let
-\[S_n = \frac{X_1 + X_2 + \cdots + X_n}{n}
-      = \frac{1}{n}\sum_{i}^{n} X_i\]
-denote their mean. Then as $n$ approaches infinity, the random variables $\sqrt{n}(S_n - \mu)$ converge in distribution to a normal $\mathcal{N}(0, \sigma^2)$.
+\section{Hardware Exploitation: VFI}
 
+The modern "modchip" approach (HWFLY, Picofly) employs Voltage Fault Injection (VFI) to bypass the BootROM's signature verification. This technique, often referred to as "glitching," relies on inducing a transient fault in the CPU's logic circuitry.
 
-\subsection{How to change the margins and paper size}
+\subsection{Mechanism of Voltage Glitching}
+Digital circuits rely on precise timing to propagate signals through logic gates. The propagation delay ($t_{pd}$) is inversely proportional to the supply voltage ($V_{dd}$).
 
-Usually the template you're using will have the page margins and paper size set correctly for that use-case. For example, if you're using a journal article template provided by the journal publisher, that template will be formatted according to their requirements. In these cases, it's best not to alter the margins directly.
+If the voltage supplied to the CPU core ($VDD\_CPU$) is dropped significantly ("crowbarred") for a duration on the order of nanoseconds, signal propagation delays increase. If $t_{pd}$ exceeds the clock cycle duration ($t_{clk}$), the CPU may latch an incorrect value at the end of the cycle.
 
-If however you're using a more general template, such as this one, and would like to alter the margins, a common way to do so is via the geometry package. You can find the geometry package loaded in the preamble at the top of this example file, and if you'd like to learn more about how to adjust the settings, please visit this help article on \href{https://www.overleaf.com/learn/latex/page_size_and_margins}{page size and margins}.
+\begin{figure}[htbp]
+  \centering
+  \framebox{\parbox{0.9\columnwidth}{\centering
+    \vspace{2cm}
+    \textbf{Figure 1: VFI Timing Diagram} \\
+    \small\textit{Visualizing the voltage drop (glitch) alignment relative to the CPU Clock Cycle.}
+    \vspace{2cm}
+  }}
+  \caption{Voltage Fault Injection Timing}
+  \label{fig:vfi}
+\end{figure}
 
-\subsection{How to change the document language and spell check settings}
+The attacker aims to corrupt the instruction that compares the calculated signature hash with the expected value, or the conditional branch instruction (e.g., `B.NE`) that jumps to the panic routine upon failure. By glitching this specific instruction, the processor "falls through" the security check, treating a failed signature verification as a success.
 
-Overleaf supports many different languages, including multiple different languages within one document.
+\subsection{Modchip Architecture: The RP2040}
+Modern implementations often utilize the RP2040 microcontroller (Picofly). The modchip acts as a logic analyzer and pulse generator. It requires precise connections to the motherboard:
+\begin{itemize}
+    \item \textbf{eMMC Bus (CMD, CLK, DAT0):} Used to "sniff" communication between the SoC and storage. This allows the modchip to synchronize its internal timer with the deterministic execution of the BootROM.
+    \item \textbf{CPU MOSFETs:} The glitch line used to momentarily short the CPU voltage rail to ground via high-speed MOSFETs on the modchip.
+    \item \textbf{Reset Line:} To restart the console if the glitch fails (hangs the system).
+\end{itemize}
 
-To configure the document language, simply edit the option provided to the babel package in the preamble at the top of this example project. To learn more about the different options, please visit this help article on \href{https://www.overleaf.com/learn/latex/International_language_support}{international language support}.
+The operation follows a strict state machine:
+\begin{enumerate}
+    \item \textbf{Reset:} Hold the Tegra in reset.
+    \item \textbf{Wait:} Release reset and listen to eMMC traffic.
+    \item \textbf{Pattern Match:} Identify a specific bootloader read operation that precedes the signature check.
+    \item \textbf{Delay:} Wait a precise number of microseconds.
+    \item \textbf{Glitch:} Pull $VDD\_CPU$ low for $\approx$100-300ns.
+\end{enumerate}
 
-To change the spell check language, simply open the Overleaf menu at the top left of the editor window, scroll down to the spell check setting, and adjust accordingly.
+If successful, the BootROM accepts an invalid header and executes the payload residing on the SD card.
 
-\subsection{How to add Citations and a References List}
+\section{Bootloader Engineering: Hekate}
 
-You can simply upload a \verb|.bib| file containing your BibTeX entries, created with a tool such as JabRef. You can then cite entries from it, like this: \cite{greenwade93}. Just remember to specify a bibliography style, as well as the filename of the \verb|.bib|. You can find a \href{https://www.overleaf.com/help/97-how-to-include-a-bibliography-using-bibtex}{video tutorial here} to learn more about BibTeX.
+Once code execution is achieved, the payload injected is typically \textbf{Hekate} (CTCaer Mod). It is a bare-metal operating system designed to prepare the hardware environment.
 
-If you have an \href{https://www.overleaf.com/user/subscription/plans}{upgraded account}, you can also import your Mendeley or Zotero library directly as a \verb|.bib| file, via the upload menu in the file-tree.
+\subsection{Minerva: DRAM Training}
+One of Hekate's most engineering-intensive features is "Minerva." The Tegra X1's LPDDR4 memory requires precise calibration (training) at boot to account for physical variations in trace length and impedance.
 
-\subsection{Good luck!}
+The stock BootROM performs conservative training. Hekate injects \textbf{Minerva}, a custom training cell, into the BPMP (Boot and Power Management Processor). Minerva retrains the DRAM with aggressive parameters, achieving higher bandwidth (up to 1600MHz+ compared to stock 1333MHz) and lower latency. This is crucial for the performance of the CFW and Homebrew.
 
-We hope you find Overleaf useful, and do take a look at our \href{https://www.overleaf.com/learn}{help library} for more tutorials and user guides! Please also let us know if you have any feedback using the \textbf{Contact us} link at the bottom of the Overleaf menu --- or use the contact form at \url{https://www.overleaf.com/contact}.
+\subsection{Payload Injection}
+Hekate parses `hekate\_ipl.ini` to determine boot targets. It acts similarly to GRUB on Linux, offering a menu to chainload other payloads. The primary target for most users is `fusee.bin`, which bootstraps the Atmosphere CFW.
 
-\bibliographystyle{alpha}
-\bibliography{sample}
+\section{Custom Firmware: Atmosphere}
+
+Atmosphere is not a permanent firmware replacement but a set of runtime patches. It is a masterpiece of reverse engineering, consisting of userland system modules and a complete kernel reimplementation.
+
+\subsection{Mesosphere: The Custom Kernel}
+Originally, Atmosphere patched the official Nintendo kernel. However, later versions introduced \textbf{Mesosphere}, a complete open-source reimplementation of the Switch Horizon kernel.
+\begin{itemize}
+    \item \textbf{Accuracy:} It replicates the behavior of the official kernel 1:1 to ensure game compatibility.
+    \item \textbf{Instrumentation:} It allows for extensive debugging and hooking that would be impossible with binary patches alone.
+    \item \textbf{Optimization:} It fixes bugs present in the official Nintendo kernel.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \framebox{\parbox{0.9\columnwidth}{\centering
+    \vspace{2cm}
+    \textbf{Figure 2: Architecture Layers} \\
+    \small\textit{Fusée (Loader) $\rightarrow$ Exosphère (Secure Monitor) $\rightarrow$ Mesosphere (Kernel) $\rightarrow$ Stratosphère (Userland).}
+    \vspace{2cm}
+  }}
+  \caption{Atmosphere Layering}
+  \label{fig:atmo}
+\end{figure}
+
+\subsection{Exosphère (Secure Monitor)}
+Running at Exception Level 3 (EL3), Exosphère reimplements the TrustZone Secure Monitor. It handles Secure Monitor Calls (SMCs) and manages hardware security keys.
+
+Crucially, Exosphère enables \textbf{Prodinfo Blanking}. It intercepts reads to the calibration partition where the console's unique Serial Number and Certificates are stored. It returns zeros to the OS, preventing the console from identifying itself to Nintendo servers, effectively creating a "stealth mode" to avoid account bans.
+
+\subsection{Stratosphère (Userland Modules)}
+This layer consists of custom system modules that intercept Inter-Process Communication (IPC) calls.
+
+\subsubsection{fs\_mitm}
+The "File System Man-in-the-Middle" module is critical for modding. It hooks the file system service (`fsp-srv`).
+
+When a game requests a file, e.g., `romfs:/Model/Player.pack`, \texttt{fs\_mitm} intercepts the request. It checks a specific directory on the SD card (LayeredFS).
+\begin{itemize}
+    \item \textbf{If found on SD:} It serves the file handle from the SD card.
+    \item \textbf{If not found:} It passes the request to the original game container (NSP/XCI).
+\end{itemize}
+This allows users to replace game assets (textures, models, text) transparently without breaking the digital signature of the game container itself.
+
+\subsubsection{loader}
+The `loader` system module is patched to:
+\begin{enumerate}
+    \item Bypass checks that prevent unsigned NRO (Nintendo Relocatable Object) executables from running.
+    \item Implement "Title Override" (discussed in Section 6).
+\end{enumerate}
+
+\section{Storage Virtualization: emuMMC}
+
+emuMMC (Emulated Multi-Media Card) is a storage virtualization technique that decouples the operating system from the physical NAND flash chip soldered to the motherboard.
+
+\subsection{Block-Level Redirection}
+The Switch OS communicates with storage via the MMC driver. emuMMC patches this driver. When the OS attempts to read/write to Device ID 0 (Internal NAND), the driver redirects these Logical Block Addresses (LBAs) to an offset on the microSD card (Device ID 1).
+
+\begin{table}[htbp]
+\centering
+\caption{emuMMC Implementation Types}
+\label{tab:emummc}
+\small
+\begin{tabular}{@{}lp{3cm}p{3cm}@{}}
+\toprule
+\textbf{Metric} & \textbf{Partition-Based} & \textbf{File-Based} \\ \midrule
+Structure & Raw hex data at SD offset & Split files (00, 01...) on FAT32 \\
+I/O Path & Direct sector access & Through FAT32 driver \\
+Speed & High (Near Native) & Moderate (Overhead) \\
+Corruption & Low Risk & Higher Risk \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The "Dirty" Flag}
+emuMMC allows the user to keep the internal memory (sysMMC) completely clean and "stock" for online play, while doing all modifications on the emuMMC. This "dual-boot" setup is standard practice to avoid bans.
+
+\section{Userland Execution: Homebrew}
+
+The execution of unsigned code (Homebrew) faces significant memory constraints imposed by the Horizon OS.
+
+\subsection{Applet Mode}
+When a user opens the "Album" app, the OS allocates a small "Applet" heap.
+\begin{itemize}
+    \item \textbf{Memory:} $\approx$448 MB available.
+    \item \textbf{Use Case:} Simple tools, save managers.
+    \item \textbf{Limitations:} JIT (Just-In-Time) compilation is often disabled or restricted; 3D games will crash due to lack of RAM.
+\end{itemize}
+
+\subsection{Application Mode (Title Override)}
+To run resource-intensive homebrew (like the Dolphin emulator or Ubuntu Linux), full access to the system runs is required.
+\begin{itemize}
+    \item \textbf{Mechanism:} The user holds `R` while launching a legitimate retail game.
+    \item \textbf{Interception:} Atmosphere's `loader` module detects the key press. Instead of loading the game's executable (`main.npdm`), it loads `hbmenu.nro`.
+    \item \textbf{Memory:} $\approx$3.2 GB available.
+    \item \textbf{Access:} Full GPU access, all CPU cores unlocked (if overclocked via sys-clk), and JIT support.
+\end{itemize}
+
+\section{Comparative Engineering: Android vs. Switch}
+
+While both involve gaining control over ARM-based hardware, the architectural approaches differ fundamentally.
+
+\subsection{Architecture \& Privilege Model}
+\textbf{Android (Rooting):} Android is built on the Linux kernel. Security relies on Discretionary Access Control (DAC) via User IDs (UIDs) and Mandatory Access Control (MAC) via SELinux.
+\begin{itemize}
+    \item \textbf{Goal:} Obtain UID 0 (`root`).
+    \item \textbf{Scope:} UID 0 has near-unlimited access to the kernel and userland, restricted primarily by SELinux contexts (which are often patched or set to Permissive).
+\end{itemize}
+
+\textbf{Switch (Atmosphere):} Horizon is a microkernel. There is no concept of "users" or "root."
+\begin{itemize}
+    \item \textbf{Handles:} Security is capability-based. Processes hold "handles" to services.
+    \item \textbf{Goal:} Patch the kernel to ignore capability checks (Service Management or `sm` patching).
+    \item \textbf{Scope:} Gaining control requires reimplementing specific system modules. You don't "become root"; you "rewrite the rules" of the kernel's IPC manager.
+\end{itemize}
+
+\subsection{Persistence and Boot Chain}
+\textbf{Android:} Rooting is typically permanent (untethered). The `boot.img` partition is flashed with a patched kernel (Magisk). The modification survives reboots effortlessly.
+
+\textbf{Switch:} Exploits are inherently volatile (tethered/semi-tethered). The internal NAND is rarely flashed with custom code to prevent bricks and bans.
+\begin{itemize}
+    \item Every time the Switch boots, it loads stock firmware from NAND.
+    \item The exploit (VFI) must interrupt this \textit{every single time} to inject Hekate/Atmosphere into RAM.
+    \item If the battery dies, the patches vanish, and the console reverts to stock (or fails to boot if the modchip is misconfigured).
+\end{itemize}
+
+\section{Conclusion}
+
+The modification of a "Mariko" Nintendo Switch is a complex interplay of hardware physics and software engineering. It begins with the precise application of Voltage Fault Injection to destabilize the CPU pipeline, bypassing the hardware Root of Trust.
+
+Following the exploit, the software stack is rebuilt from the ground up: Hekate initializes the hardware "bare metal," Mesosphere reimplements the kernel, and Stratosphère patches userland services to permit unsigned code. The distinction between Applet and Application modes highlights the rigid resource management of the console, while emuMMC provides a critical virtualization layer for safety.
+
+Unlike Android's permission-based rooting, Switch modding is fundamentally an exercise in runtime patching, virtualization, and kernel reimplementation.
 
 \end{document}
