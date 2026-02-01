@@ -73,19 +73,19 @@ If the voltage supplied to the CPU core ($VDD\_CPU$) is dropped significantly ("
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\columnwidth]{installed-picofly.png}
+  \includegraphics[width=0.9\columnwidth]{./installed_picofly.png}
   \caption{Installed Picofly Modchip (source: retrosix.wiki)}  
 \end{figure}
 
 
-\begin{figure}[htbp]
-  \centering
-  % Replace 'glitch_scope' with your actual filename
-  \includegraphics[width=0.9\columnwidth]{glitch_scope.png}
-  \caption{Voltage Fault Injection Timing (Source: LimitedResults)}
-\end{figure}
-
-
+% \begin{figure}[htbp]
+%   \centering
+%   % Replace 'glitch_scope' with your actual filename
+%   \includegraphics[width=0.9\columnwidth]{glitch_scope.png}
+%   \caption{Voltage Fault Injection Timing (Source: LimitedResults)}
+% \end{figure}
+%
+%
 The attacker aims to corrupt the instruction that compares the calculated signature hash with the expected value, or the conditional branch instruction (e.g., `B.NE`) that jumps to the panic routine upon failure. By glitching this specific instruction, the processor "falls through" the security check, treating a failed signature verification as a success.
 
 \subsection{Modchip Architecture: The RP2040}
