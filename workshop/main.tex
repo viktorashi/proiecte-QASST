@@ -71,7 +71,7 @@ Digital circuits rely on precise timing to propagate signals through logic gates
 
 If the voltage supplied to the CPU core ($VDD\_CPU$) is dropped significantly ("crowbarred") for a duration on the order of nanoseconds, signal propagation delays increase. If $t_{pd}$ exceeds the clock cycle duration ($t_{clk}$), the CPU may latch an incorrect value at the end of the cycle.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.9\columnwidth]{installed-picofly.jpg}
   \caption{Installed Picofly Modchip (source: retrosix.wiki)}  
@@ -79,7 +79,7 @@ If the voltage supplied to the CPU core ($VDD\_CPU$) is dropped significantly ("
 
 The Following pics are taken from this paper: \cite{} , which actually reffer to the Tegra X2, but a lot of the same things apply here as well.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.9\columnwidth]{tegrax2/boot-flow.png}
   \caption{The boot flow of the Tegra X2 SoC}
@@ -88,8 +88,9 @@ The Following pics are taken from this paper: \cite{} , which actually reffer to
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.9\columnwidth]{tegrax2/signal-graph.png}
-  \caption{Exmaple glitch of 3 \textmu s length. \verb|trigger_in| is the FPGA’s GPIO signal controlling the multiplexer, MOSFET_Gate is measured at the MOSFET’s gate, and VDD_SOC at the MOSFET’s drain. }  
 \end{figure}
+
+Example glitch of 3 \textmu s length. $\verb|trigger_in|$ is the FPGA’s GPIO signal controlling the multiplexer, $\verb|MOSFET_Gate|$ is measured at the MOSFET’s gate, and $\verb|VDD_SOC|$ at the MOSFET’s drain. 
 
 
 
