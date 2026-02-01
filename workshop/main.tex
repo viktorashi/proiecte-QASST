@@ -73,16 +73,11 @@ If the voltage supplied to the CPU core ($VDD\_CPU$) is dropped significantly ("
 
 \begin{figure}[htbp]
   \centering
-  \framebox{\parbox{0.9\columnwidth}{\centering
-    \vspace{2cm}
-    \textbf{Figure 1: VFI Timing Diagram} \\
-    \small\textit{Visualizing the voltage drop (glitch) alignment relative to the CPU Clock Cycle.}
-    \vspace{2cm}
-  }}
-  \caption{Voltage Fault Injection Timing}
+  % Replace 'glitch_scope' with your actual filename
+  \includegraphics[width=0.9\columnwidth]{glitch_scope.png}
+  \caption{Voltage Fault Injection Timing (Source: LimitedResults)}
   \label{fig:vfi}
 \end{figure}
-
 The attacker aims to corrupt the instruction that compares the calculated signature hash with the expected value, or the conditional branch instruction (e.g., `B.NE`) that jumps to the panic routine upon failure. By glitching this specific instruction, the processor "falls through" the security check, treating a failed signature verification as a success.
 
 \subsection{Modchip Architecture: The RP2040}
@@ -130,16 +125,11 @@ Originally, Atmosphere patched the official Nintendo kernel. However, later vers
 
 \begin{figure}[htbp]
   \centering
-  \framebox{\parbox{0.9\columnwidth}{\centering
-    \vspace{2cm}
-    \textbf{Figure 2: Architecture Layers} \\
-    \small\textit{Fusée (Loader) $\rightarrow$ Exosphère (Secure Monitor) $\rightarrow$ Mesosphere (Kernel) $\rightarrow$ Stratosphère (Userland).}
-    \vspace{2cm}
-  }}
-  \caption{Atmosphere Layering}
+  % Replace 'layers' with your actual filename
+  \includegraphics[width=0.9\columnwidth]{layers.png}
+  \caption{Atmosphere Architecture Layers}
   \label{fig:atmo}
 \end{figure}
-
 \subsection{Exosphère (Secure Monitor)}
 Running at Exception Level 3 (EL3), Exosphère reimplements the TrustZone Secure Monitor. It handles Secure Monitor Calls (SMCs) and manages hardware security keys.
 
