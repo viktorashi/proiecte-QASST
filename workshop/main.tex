@@ -71,11 +71,18 @@ Digital circuits \cite{balika011} rely on precise timing to propagate signals th
 
 If the voltage supplied to the CPU core ($VDD\_CPU$) is dropped significantly ("crowbarred") for a duration on the order of nanoseconds, signal propagation delays increase. If $t_{pd}$ exceeds the clock cycle duration ($t_{clk}$), the CPU may latch an incorrect value at the end of the cycle.
 
-\begin{figure}[H]
+\begin{figure}[h]
   \centering
-  \includegraphics[width=0.9\columnwidth]{installed-picofly.jpg}
-  \caption{Installed Picofly Modchip (source: retrosix.wiki)}  
+  \includegraphics[width=0.9\columnwidth]{my-pics/hwfly-pe-birou.jpg}
+  \caption{The HW Picofly Modchip I bought, on my desk}  
 \end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\columnwidth]{my-pics/hwfly-pe-aliexpress.jpg}
+  \caption{Realllly good price tbh}  
+\end{figure}
+
 
 The Following pics are taken from this paper: \cite{tegrax2-voltage-glitching} , which actually reffer to the Tegra X2, but a lot of the same things apply here as well.
 
@@ -189,6 +196,23 @@ Execution of unsigned code faces memory constraints \cite{switchbrew}:
 \section{Conclusion}
 
 The modification of a "Mariko" Switch is a complex interplay of hardware physics and software engineering. It begins with VFI to bypass the hardware Root of Trust, followed by the initialization of Hekate and the runtime patching of the microkernel by Atmosphere.
+
+Then, if you're not careful of what you do after you got ahold of running unsigned code, you might have to face the consequences:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\columnwidth]{my-pics/sorryyoucant.jpg}
+  \caption{OOps 1}  
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\columnwidth]{my-pics/step1.jpg}
+  \caption{OOps 2}  
+\end{figure}
+
+I've been in that boat :(
+
 
 % References
 \bibliographystyle{ieeetr}
