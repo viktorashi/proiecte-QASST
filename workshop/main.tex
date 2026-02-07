@@ -64,10 +64,10 @@ The shift to Mariko necessitated a return to hardware-based exploitation techniq
 
 \section{Hardware Exploitation: VFI}
 
-The modern "modchip" approach (HWFLY, Picofly) employs Voltage Fault Injection (VFI) to bypass the BootROM's signature verification. This technique, often referred to as "glitching," relies on inducing a transient fault in the CPU's logic circuitry \cite{limitedresults2019vfi}.
+The modern "modchip" approach (HWFLY, Picofly) employs Voltage Fault Injection (VFI) to bypass the BootROM's signature verification. This technique, often referred to as "glitching," relies on inducing a transient fault in the CPU's logic circuitry \cite{retrosix}.
 
 \subsection{Mechanism of Voltage Glitching}
-Digital circuits rely on precise timing to propagate signals through logic gates. The propagation delay ($t_{pd}$) is inversely proportional to the supply voltage ($V_{dd}$).
+Digital circuits \cite{balika011} rely on precise timing to propagate signals through logic gates. The propagation delay ($t_{pd}$) is inversely proportional to the supply voltage ($V_{dd}$).
 
 If the voltage supplied to the CPU core ($VDD\_CPU$) is dropped significantly ("crowbarred") for a duration on the order of nanoseconds, signal propagation delays increase. If $t_{pd}$ exceeds the clock cycle duration ($t_{clk}$), the CPU may latch an incorrect value at the end of the cycle.
 
